@@ -212,7 +212,8 @@ script:
       echo warm up cache
       ;;
     cabal)
-      travis_long cabal install --enable-tests --enable-benchmarks --force-reinstalls --ghc-options=-O0 --reorder-goals --max-backjumps=-1 $CABALARGS $PACKAGES
+      # travis_long cabal install --enable-tests --enable-benchmarks --force-reinstalls --ghc-options=-O0 --reorder-goals --max-backjumps=-1 $CABALARGS $PACKAGES
+      echo warm up cache
 
       ORIGDIR=$(pwd)
       for dir in $PACKAGES
