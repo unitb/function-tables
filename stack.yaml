@@ -39,6 +39,7 @@ packages:
 - location:
     git: https://github.com/literate-unitb/literate-unitb-latex.git
     commit: 78529049b88999df3eb76340db166d9892d46bfd
+# - ../latex-function-tables
 - location:
    git: https://github.com/unitb/latex-function-tables
    commit: 9538779944761c0e0fa930d70a9cd42fad95b280
@@ -102,6 +103,7 @@ extra-deps:
 - portable-template-haskell-lens-0.1.0.0
 - serialize-instances-0.1.0.0
 - portable-lines-0.1
+- th-printf-0.3.1
 
 # Override default flag values for local packages and extra-deps
 flags: {}
