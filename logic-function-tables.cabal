@@ -19,6 +19,8 @@ library
   build-depends:       base >= 4.7 && < 5
                      , literate-unitb-logic
                      , latex-function-tables
+                     , lens
+                     , primitive < 0.6.2
                      , syntax-error
   default-language:    Haskell2010
 
