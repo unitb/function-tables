@@ -208,12 +208,11 @@ script:
   case "$BUILD" in
     stack)
       # stack --no-terminal $ARGS test --bench --no-run-benchmarks --haddock --no-haddock-deps
-      # travis_long stack --no-terminal $ARGS test --bench --no-run-benchmarks 
-      echo warm up cache
+      travis_long stack --no-terminal $ARGS test --bench --no-run-benchmarks 
+      # echo warm up cache
       ;;
     cabal)
-      # travis_long cabal install --enable-tests --enable-benchmarks --force-reinstalls --ghc-options=-O0 --reorder-goals --max-backjumps=-1 $CABALARGS $PACKAGES
-      echo warm up cache
+      travis_long cabal install --enable-tests --enable-benchmarks --force-reinstalls --ghc-options=-O0 --reorder-goals --max-backjumps=-1 $CABALARGS $PACKAGES
 
       ORIGDIR=$(pwd)
       for dir in $PACKAGES

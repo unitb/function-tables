@@ -17,7 +17,9 @@
         },
         {
           "name": "run",
-          "cmd": ["stack", "build", "--ghc-options", "-W -Werror", "--exec", "nfm2017-exe"],
+          "cmd": ["stack", "build", "--ghc-options", "-W"
+              , "--exec", "logic-function-tables-exe"
+              , "--test","--no-run-tests"],
           "file_regex": "^ {0,4}([^\\s=:\\(\\)][^\\n:\\(\\)]+?hs):([0-9]*):?([0-9]*)",
           "selector": "source.haskell",
           "working_dir": "${project_path}"

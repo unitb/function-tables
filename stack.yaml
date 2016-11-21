@@ -39,10 +39,9 @@ packages:
 - location:
     git: https://github.com/literate-unitb/literate-unitb-latex.git
     commit: 78529049b88999df3eb76340db166d9892d46bfd
-# - ../latex-function-tables
 - location:
    git: https://github.com/unitb/latex-function-tables
-   commit: 9538779944761c0e0fa930d70a9cd42fad95b280
+   commit: 083b1a5230d56c47fdba783f20e31a98406195cf
 - location:
     git: https://github.com/literate-unitb/bipartite-graph.git
     commit: 0e430c7a0571b31d980bf4141197ec6c19b964b6
@@ -105,6 +104,7 @@ extra-deps:
 - portable-lines-0.1
 - th-printf-0.3.1
 - primitive-0.6.1.0
+- zlib-0.6.1.1
 
 # Override default flag values for local packages and extra-deps
 flags: {}
