@@ -9,7 +9,7 @@ import Control.Monad.Trans.Either
 import Data.Bitraversable
 import Data.List as L
 import Data.List.NonEmpty as N
-import Data.Map  as M
+import Data.Map  as M
 
 import Logic.Expr
 import Logic.Expr.Parser

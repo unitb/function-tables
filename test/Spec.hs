@@ -24,7 +24,7 @@ import UnitB.FunctionTable
 
 import Z3.Z3
 
-doc :: Render a => a -> LaTeX
+doc :: Render a => a -> LaTeX
 doc t = 
     documentclass [] article
  <> usepackage [] "multirow"

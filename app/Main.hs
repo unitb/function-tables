@@ -19,7 +19,7 @@ import Text.LaTeX.FunctionTable
 
 import System.Process
 
-doc :: Render a => a -> LaTeX
+doc :: Render a => a -> LaTeX
 doc t = 
     documentclass [] article
  <> usepackage [] "multirow"
