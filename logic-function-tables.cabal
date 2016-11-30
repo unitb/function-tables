@@ -15,21 +15,31 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     UnitB.FunctionTable
+  exposed-modules:     
+      UnitB.FunctionTable
+      UnitB.FunctionTable.Spec
   build-depends:       base >= 4.7 && < 5
                      , bifunctors
                      , containers
+                     , control-invariants
                      , either
+                     , generic-instances
+                     , HaTeX >= 3.17
                      , literate-unitb-logic
                      , latex-function-tables
                      , lens
+                     , lens-extra
                      , mtl
-                     , zlib < 0.6.1.2
+                     , process
                      , primitive < 0.6.2
                      , semigroups
                      , syntax-error
+                     , template-haskell
+                     , text
                      , th-printf
+                     , zlib < 0.6.1.2
   default-language:    Haskell2010
+  default-extensions:    DeriveFunctor, DeriveGeneric, GeneralizedNewtypeDeriving, FlexibleContexts
 
 executable logic-function-tables-exe
   hs-source-dirs:      app
@@ -43,7 +53,10 @@ executable logic-function-tables-exe
                      , lens
                      , literate-unitb-logic
                      , logic-function-tables
+                     , mtl
                      , process
+                     , syntax-error
+                     , th-printf
   default-language:    Haskell2010
 
 test-suite logic-function-tables-test

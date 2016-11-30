@@ -5,7 +5,7 @@ module Main where
 import Control.Concurrent
 import Control.Lens
 import Data.Bitraversable
-import Data.Map
+import Data.Map as M
 
 import Logic.QuasiQuote
 import Logic.Theories.Arithmetic
@@ -55,7 +55,7 @@ main = do
             parser = ctxWith ts 
                 (do [var| x,y : \Int |]
                     [var| f : \Int \pfun \Int |]) id
-        r <- verifyTable parser ts ft
+        r <- checkTable parser ts M.empty M.empty ft
         if has (_Right.filtered ((7 ==) . size).filtered (all (Valid ==))) r then exitSuccess
                    else exitFailure
             -- 

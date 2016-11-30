@@ -26,7 +26,10 @@ packages:
 # - https://example.com/foo/bar/baz-0.0.2.tar.gz
 - location:
    git: https://github.com/unitb/literate-unitb-logic
-   commit: 1e38920e6ed760b6b87bd0b0decb50fea7ae9599
+   commit: 8104bd3e39c9f861ab8b791ad297052637d37b9c
+- location:
+   git: https://github.com/unitb/latex-function-tables
+   commit: ba0a5c7adb1b8c65f0c6b8df2c227103aafff6ef
 - location:
     git: https://github.com/unitb/literate-unitb-utils.git
     commit: 9e62be5a42bc11ecc89bd40284bb73fc2a8407fe
@@ -37,9 +40,6 @@ packages:
     git: https://github.com/unitb/literate-unitb-latex.git
     commit: 78529049b88999df3eb76340db166d9892d46bfd
 - location:
-   git: https://github.com/unitb/latex-function-tables
-   commit: 083b1a5230d56c47fdba783f20e31a98406195cf
-- location:
     git: https://github.com/unitb/bipartite-graph.git
     commit: 0e430c7a0571b31d980bf4141197ec6c19b964b6
 - location:
@@ -47,16 +47,16 @@ packages:
     commit: a82197c81f2f8cdb4ecce54495ca62a6c10ad3d1
 - location:
     git: https://github.com/unitb/generic-instances.git
-    commit: 8d67a6479d3b5a38c69efd114c1d59d2b81c813c
+    commit: 5e9b4de0f6549933f570f7f2bab16654299c7b0d
 - location:
     git: https://github.com/unitb/string-lenses.git
     commit: 0d616b2f754391ba62581348464f45bcb8561019
 - location:
     git: https://github.com/unitb/pretty-printable.git
-    commit: 1adc34c9f88a5e9fec25d39cd193aec65c4625e9
+    commit: 85485a415d2098bb1a7ed8dc1ca412221a09720b
 - location:
     git: https://github.com/unitb/syntax-error.git
-    commit: 84af568ffd9427e66dc93abbe40d9c08715ba021
+    commit: 764f224e42816961ae5742996d7c8eedcd145fde
 - location:
     git: https://github.com/unitb/unitb-testing.git
     commit: 6098f62adcb956a5ba924b8cc2f6ac550d4f65f9
@@ -93,7 +93,6 @@ extra-deps:
 - latex-function-tables-0.1.0.0
 - control-invariants-0.1.0.0
 - existential-0.2.0.0
-- partial-order-0.1.2
 - pseudomacros-0.0.2
 - quickcheck-report-0.1.0.0
 - assert-0.0.1.2
@@ -103,6 +102,14 @@ extra-deps:
 - th-printf-0.3.1
 - primitive-0.6.1.0
 - zlib-0.6.1.1
+
+- HaTeX-3.17.0.2
+- base-orphans-0.5.4
+- bifunctors-5.2
+- mmorph-1.0.9
+- semigroupoids-5.0.1
+- shelly-1.6.8.1
+- vector-0.11.0.0
 
 # Override default flag values for local packages and extra-deps
 flags: {}
