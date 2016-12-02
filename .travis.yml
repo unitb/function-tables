@@ -137,9 +137,9 @@ before_install:
 - |
   if [ `uname` = "Darwin" ]
   then
-    travis_retry sudo apt-get install texlive-full
-  else
     travis_retry brew install latex-mk
+  else
+    travis_retry sudo apt-get install texlive-full
   fi
 
 # Download z3
