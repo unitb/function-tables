@@ -20,7 +20,7 @@ import UnitB.FunctionTable.Spec
 import Text.LaTeX hiding (tex)
 import Text.LaTeX.Base.Class
 import Text.LaTeX.FunctionTable as T
-import Text.LaTeX.Packages.AMSMath
+import Text.LaTeX.Packages.AMSMath hiding (text)
 
 import Text.Printf.TH
 
@@ -95,10 +95,11 @@ md_ft = makeTable                                            [T.tex|\cMd|] $ do
 
 hc_ft :: FunctionTable LaTeXLI
 hc_ft = makeTable                                              [T.tex|\cHc|] $ do
-            cell [T.tex|\mSt = \invalid \lor \neg \validRange \lor \mSw = \sOff |] 
+            cell [T.tex|\INIT \lor \mSt = \invalid \lor \neg \validRange \lor \mSw = \sOff |] 
                                                                [T.tex|\sOff|]
             branch (conjList 
-                    [ [T.tex|\mSt = \valid|] 
+                    [ [T.tex|\neg \INIT|] 
+                    , [T.tex|\mSt = \valid|] 
                     , [T.tex|\validRange |]
                     , [T.tex| \mSw = \sOn |] ]) $ do
                 cell [T.tex|\mTm < \mDl|]                      [T.tex|\sOn|]
@@ -149,7 +150,6 @@ main = do
             constant "hysteresis" "\\Bool"
             constant "heldfor" "\\Bool"
             definition "validRange" [T.tex| \between{\mAl}{\mDl}{\mDh} \land \mDh < \mAh |]
-            -- constant "validRange" "\\Bool"
             controlled "md" "Mode"
             controlled "hc" "Status"
             controlled "al" "Status"
@@ -160,10 +160,9 @@ main = do
             monitored "dh" "\\Int"
             monitored "al" "\\Int"
             monitored "ah" "\\Int"
-        --             [var| \mSt : Validity |]
-        --             [var| \mTm,\mDl,\mDh,\mAl,\mAh : \Int |]
-            mapM_ includeTable [md_ft,hc_ft,al_ft]
-            --
-            -- Verification
-            --
+            includeTableAsm md_ft
+            text 
+                [ "This is text" 
+                , "what do you mean?" ]
+            mapM_ includeTable [hc_ft,al_ft]
         return ()

@@ -1,7 +1,7 @@
 {-# LANGUAGE QuasiQuotes,TemplateHaskell,ImplicitParams #-}
 module UnitB.FunctionTable where
 
-import Control.Lens
+import Control.Lens hiding ((<.>))
 import Control.Monad
 import Control.Monad.Trans
 import Control.Monad.Trans.Either
@@ -17,11 +17,13 @@ import Logic.Proof.POGenerator as PO
 import Logic.Theory
 import Logic.WellDefinedness
 
+import System.FilePath
 -- import Text.LaTeX (render)
 import Text.LaTeX.FunctionTable
 import Text.Printf.TH
 import Utilities.Syntactic
 import Z3.Z3
+
 
 parseTable :: ParserSetting
            -> FunctionTable LaTeXLI
@@ -50,14 +52,27 @@ instance Syntactic LaTeXLI where
 toStringLi :: LaTeXLI -> StringLi
 toStringLi (LaTeXLI li t) = asStringLi (locToLI li) t
 
+assertion :: FunctionTable Expr -> Expr
+assertion (Table x t) = zsome $ ifoldr (\asm -> (:) . zand (zall asm) . zeq x) [] t
+
 verifyTable :: ParserSetting
             -> [Theory]
             -> Map Name Sort
             -> Map Name Def
             -> FunctionTable Expr
             -> IO (Map Label Validity)
-verifyTable p' thys ss defs = 
-        traverseWithKey discharge 
+verifyTable p thys ss defs = verifyTable' p thys ss defs []
+
+verifyTable' :: ParserSetting
+             -> [Theory]
+             -> Map Name Sort
+             -> Map Name Def
+             -> [Expr]
+             -> FunctionTable Expr
+             -> IO (Map Label Validity)
+verifyTable' p' thys ss defs asms t = 
+        discharge_all'
+          <=< writeLog
             . eval_generator 
             . with (do 
                 _context $ contextOf p'
@@ -67,8 +82,15 @@ verifyTable p' thys ss defs =
                     let syn = mconcat $ L.map (view syntacticThm) $ all_theories thy
                     _context $ theory_ctx thy
                     set_syntactic_props syn
-                    nameless_hyps $ M.elems $ theory_facts thy ) 
-            . functionTablePO
+                    nameless_hyps $ M.elems $ theory_facts thy 
+                    nameless_hyps asms ) 
+            . functionTablePO $ t
+    where
+        lbl = pretty $ header t
+        writeLog po = do
+            let listing k p = [s|(echo "%s")\n(push)\n%s\n; %s\n(pop)\n|] (pretty k) (z3_code p) (pretty k)
+            writeFile (lbl <.> "z3") $ foldMapWithKey listing po
+            return po
 
 checkTable :: ParserSetting
            -> [Theory]
@@ -86,6 +108,9 @@ checkTable p thys ss defs t = runEitherT $ do
             (p' & decls %~ M.union (M.mapMaybe defAsVar defs)) 
             t
     lift $ verifyTable p' thys ss defs t'
+
+header :: FunctionTable a -> a
+header (Table x _) = x
 
 functionTablePO :: FunctionTable Expr -> POGen ()
 functionTablePO (Table _ t) = functionTablePO' t
@@ -111,5 +136,14 @@ completeness (Cell _) = return ()
 completeness (Condition _ xs) = emit_goal [label "completeness"] $ zsome $ fst <$> xs
 
 wellDefinedness :: TableCells Expr -> POGen ()
-wellDefinedness (Cell p) = emit_goal [label "WD"] $ well_definedness p
-wellDefinedness (Condition _ xs) = imapM_ (\i -> emit_goal [label $ [s|WD/%d|] i].well_definedness.fst) xs
+wellDefinedness (Cell p) = -- trace ([s|+ %s\n  %?|] (pretty wd) wd) $ 
+                           emit_goal [label "WD"] wd
+    where
+        wd = well_definedness p
+wellDefinedness (Condition _ xs) = imapM_ (lmap fst.emitWD) xs
+
+emitWD :: Int -> Expr -> POGen ()
+emitWD i e = -- trace ([s|- %s\n  %?|] (pretty wd) wd) $ 
+             emit_goal [label $ [s|WD/%d|] i] wd
+    where
+        wd = well_definedness e
