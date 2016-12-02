@@ -71,7 +71,7 @@ ft = makeTable "x" $ do
             cell "\\neg x \\in \\dom.f" "x"
         cell "y > 3"                    "x - 1"
 
-conjList :: (Monoid t,LaTeXC t) => [t] -> t
+conjList :: (LaTeXC t) => [t] -> t
 conjList [] = mempty
 conjList (x:xs) = array Nothing [RightColumn,LeftColumn] $ 
 -- conjList (x:xs) = array Nothing [RightColumn,Separator "",LeftColumn] $ 

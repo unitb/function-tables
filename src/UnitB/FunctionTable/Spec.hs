@@ -15,7 +15,6 @@ import Control.Precondition
 
 import Data.Char
 import Data.Either
-import Data.Functor.Compose
 import Data.List as L
 import Data.Map as M
 import Data.Text hiding (toUpper)

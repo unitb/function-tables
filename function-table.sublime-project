@@ -17,7 +17,7 @@
         },
         {
           "name": "run",
-          "cmd": ["stack", "build", "--ghc-options", "-W"
+          "cmd": ["stack", "build", "--ghc-options", "-W -threaded"
               , "--exec", "logic-function-tables-exe"
               , "--test","--no-run-tests"],
           "file_regex": "^ {0,4}([^\\s=:\\(\\)][^\\n:\\(\\)]+?hs):([0-9]*):?([0-9]*)",
