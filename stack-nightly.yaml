@@ -29,7 +29,7 @@ packages:
    commit: fc4222b7a59d73f30617b7f84fb353d52f375536
 - location:
    git: https://github.com/unitb/latex-function-tables
-   commit: master
+   commit: cb35c8b56c544f325a99c74ae8f0d776cfd9339f
 - location:
     git: https://github.com/unitb/literate-unitb-utils.git
     commit: 9e62be5a42bc11ecc89bd40284bb73fc2a8407fe
