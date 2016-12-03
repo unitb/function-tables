@@ -4,3 +4,9 @@
 
 Verification of function table specifications
 
+## TODO
+
+* Color table cells based on verification results
+* Adaptive cell height based on contents
+* Generate MarkDown code from specification (E.g. to create this readme)
+
