@@ -110,6 +110,7 @@ extra-deps:
 - semigroupoids-5.0.1
 - shelly-1.6.8.1
 - vector-0.11.0.0
+- lens-4.14
 
 # Override default flag values for local packages and extra-deps
 flags: {}

@@ -47,6 +47,7 @@ library
 executable logic-function-tables-exe
   hs-source-dirs:      app
   main-is:             Main.hs
+  other-modules:       Example
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , bifunctors
@@ -65,7 +66,8 @@ executable logic-function-tables-exe
 test-suite logic-function-tables-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      app
-  main-is:             Main.hs
+  main-is:             Spec.hs
+  other-modules:       Example
   build-depends:       base
                      , bifunctors
                      , containers
@@ -75,9 +77,12 @@ test-suite logic-function-tables-test
                      , literate-unitb-logic
                      , logic-function-tables
                      , mtl
+                     , pipes
                      , process
-                     , th-printf
                      , syntax-error
+                     , text
+                     , th-printf
+                     , unitb-testing
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 

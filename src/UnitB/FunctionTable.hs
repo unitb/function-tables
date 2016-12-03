@@ -1,4 +1,7 @@
-{-# LANGUAGE QuasiQuotes,TemplateHaskell,ImplicitParams #-}
+{-# LANGUAGE QuasiQuotes
+        ,TemplateHaskell
+        ,ImplicitParams #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module UnitB.FunctionTable where
 
 import Control.Lens hiding ((<.>))
@@ -10,6 +13,7 @@ import Data.Bitraversable
 import Data.List as L
 import Data.List.NonEmpty as N
 import Data.Map  as M
+import Data.Text (pack)
 
 import Logic.Expr hiding (render)
 import Logic.Expr.Parser
@@ -18,9 +22,13 @@ import Logic.Theory
 import Logic.WellDefinedness
 
 import System.FilePath
--- import Text.LaTeX (render)
-import Text.LaTeX.FunctionTable
-import Text.Printf.TH
+
+import           Text.LaTeX.Base as T hiding (label,Label,(&))
+import qualified Text.LaTeX.Base as T hiding (label,Label)
+import           Text.LaTeX.Base.Class (LaTeXC)
+import           Text.LaTeX.FunctionTable
+import           Text.Printf.TH
+
 import Utilities.Syntactic
 import Z3.Z3
 
@@ -147,3 +155,8 @@ emitWD i e = -- trace ([s|- %s\n  %?|] (pretty wd) wd) $
              emit_goal [label $ [s|WD/%d|] i] wd
     where
         wd = well_definedness e
+
+conjList :: (LaTeXC t) => [t] -> t
+conjList [] = mempty
+conjList (x:xs) = T.array Nothing [RightColumn,LeftColumn] $ 
+        mconcat $ L.intersperse lnbk $ (mempty T.& x) : L.map (raw (pack "\\land") T.&) xs

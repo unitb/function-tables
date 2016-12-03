@@ -140,19 +140,31 @@ parseSpec s0 = do
         specs (fmap makeTable . (traverseValidation._2) (parseTable parser') . rights . contents) s2
         -- specs (fmap makeTable . traverseValidation (parseTable parser')) s2
 
-verifySpec :: SpecBuilder a -> IO ()
-verifySpec spec = runEffect $ verifySpec' spec >-> P.stdoutLn
+renderSpec :: SpecBuilder a 
+           -> Text
+renderSpec (SpecBuilder cmd) = T.render . specToDoc . execWriter $ cmd
 
-verifySpec' :: SpecBuilder a -> Producer String IO ()
-verifySpec' (SpecBuilder cmd) = do
+verifySpec :: SpecBuilder a -> IO ()
+verifySpec spec = runEffect $ verifySpec' Render spec >-> P.stdoutLn
+
+data SpecOpt = Render | DoNotRender
+
+verifySpec' :: SpecOpt
+            -> SpecBuilder a 
+            -> Producer String IO ()
+verifySpec' opt (SpecBuilder cmd) = do
         let ss  = execWriter cmd
             thys = [ arithmetic
                    , function_theory
                    , set_theory
                    , interval_theory
                    , basic_theory]
-        liftIO $ renderFile "table.tex" (specToDoc ss)
-        _ <- liftIO $ rawSystem "pdflatex" ["table.tex"]
+        case opt of
+            Render -> do
+                liftIO $ renderFile "table.tex" (specToDoc ss)
+                _ <- liftIO $ rawSystem "pdflatex" ["table.tex"]
+                return ()
+            DoNotRender -> return ()
         case parseSpec ss of
             Right ss' -> do
                     let ts  = ss'^.specs
@@ -160,12 +172,13 @@ verifySpec' (SpecBuilder cmd) = do
                     rs <- liftIO $ flip mapConcurrently ts $ \(isAsm,t) -> do
                         let asm | isAsm     = []
                                 | otherwise = ts'
-                        verifyTable' parser thys (ss'^.sortDecl) 
+                        (,) t <$> verifyTable' parser thys (ss'^.sortDecl) 
                                 ((ss'^.userDef) `M.union` (ss'^.dataCons))
                                 ( (asm ++) . M.elems $ M.mapMaybe wd $ ss'^.userConst )
                                 t
-                    total <- forM rs $ \r -> do  
-                        mapM_ (yield . show) $ toList r
+                    total <- forM rs $ \(t,r) -> do  
+                        yield $ pretty $ header t
+                        mapM_ (yield . pretty) $ toList r
                         yield $ [s|Success: %d / %d |] 
                             (size $ M.filter (Valid ==) r) 
                             (size r)

@@ -133,15 +133,6 @@ before_install:
 - CABALARGS=""
 - if [ "x$GHCVER" = "xhead" ]; then CABALARGS=--allow-newer; fi
 
-# Download pdflatex
-- |
-  if [ `uname` = "Darwin" ]
-  then
-    travis_retry brew install latex-mk
-  else
-    travis_retry sudo apt-get install texlive-full
-  fi
-
 # Download z3
 - mkdir $HOME/z3 || echo exists
 - |
