@@ -105,4 +105,7 @@ link (ContentWriter cmd) lnk = do
 
 verbatim :: QuasiQuoter 
 verbatim = QuasiQuoter
-     { quoteExp = \s -> [| emitContent $ Verbatim s |] }
+     { quoteExp  = \s -> [| emitContent $ Verbatim s |] 
+     , quoteDec  = undefined 
+     , quoteType = undefined 
+     , quotePat  = undefined }
