@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings,QuasiQuotes #-}
-module UnitB.FunctionTable.Spec.MarkDown where
+module UnitB.FunctionTable.Spec.Markdown where
 
 import Control.Lens
 import Control.Monad.Writer

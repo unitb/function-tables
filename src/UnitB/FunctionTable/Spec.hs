@@ -41,7 +41,7 @@ import Text.Printf.TH
 
 import UnitB.FunctionTable as T
 import UnitB.FunctionTable.Spec.LaTeX as T
-import UnitB.FunctionTable.Spec.MarkDown as T
+import UnitB.FunctionTable.Spec.Markdown as T
 import UnitB.FunctionTable.Spec.Types as T
 
 import Utilities.Syntactic
