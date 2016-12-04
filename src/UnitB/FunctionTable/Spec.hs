@@ -12,8 +12,7 @@ import Control.Applicative
 import Control.Concurrent.Async
 import Control.Lens
 import Control.Lens.Misc
-import Control.Monad.State
-import Control.Monad.Writer
+import Control.Monad.RWS
 import Control.Precondition
 
 import Data.Char
@@ -21,6 +20,7 @@ import Data.Either
 import Data.List as L
 import Data.Map as M
 import Data.Text hiding (toUpper)
+import Data.Text.IO as T  (writeFile)
 
 import Logic.Expr as N hiding (array)
 import Logic.Expr.Parser
@@ -40,6 +40,7 @@ import Text.LaTeX.Packages.AMSMath hiding (to,text)
 import Text.Printf.TH
 
 import UnitB.FunctionTable as T
+import UnitB.FunctionTable.Spec.Doc as T
 import UnitB.FunctionTable.Spec.LaTeX as T
 import UnitB.FunctionTable.Spec.Markdown as T
 import UnitB.FunctionTable.Spec.Types as T
@@ -48,29 +49,11 @@ import Utilities.Syntactic
 
 import Z3.Z3 (Validity (..))
 
--- traverse3 :: Applicative f
---           => (a -> f a')
---           -> (b -> f b')
---           -> (c -> f c')
---           -> Spec a b c
---           -> f (Spec a' b' c')
--- traverse3 f g h (Spec l0 l1 ss ds cs ts) = 
---         Spec l0 l1 ss <$> traverse h ds
---                       <*> traverse g cs
---                       <*> traverse (bitraverse f f) ts
-
--- instance Bifunctor (Spec a) where
---     bimap = bimapDefault
--- instance Bifoldable (Spec a) where
---     bifoldMap = bifoldMapDefault
--- instance Bitraversable (Spec a) where
---     bitraverse = traverse3 pure
--- instance Functor (Spec a var) where
---     fmap f = bimap id f
-
-newtype SpecBuilder a = SpecBuilder (Writer TeXSpec a)
+newtype SpecBuilder a = SpecBuilder (RWS Int TeXSpec () a)
     deriving (Functor,Applicative,Monad)
 
+instance DocBuilder SpecBuilder where
+    emitContent = liftDoc . Ct
 instance a ~ () => IsString (SpecBuilder a) where
     fromString t = text t
 
@@ -107,13 +90,23 @@ parseSpec s0 = do
         specs (fmap makeTable . (traverseValidation._2) (parseTable parser') . rights . contents) s2
         -- specs (fmap makeTable . traverseValidation (parseTable parser')) s2
 
+renderSpecMDFile :: FilePath
+                 -> SpecBuilder a 
+                 -> IO ()
+renderSpecMDFile fn = renderSpecMD >=> T.writeFile fn
+
 renderSpecMD :: SpecBuilder a 
              -> IO Text
-renderSpecMD (SpecBuilder cmd) = specToMD . execWriter $ cmd
+renderSpecMD (SpecBuilder cmd) = fmap unMD . specToMD . snd $ execRWS cmd 1 ()
+
+renderSpecTeXFile :: FilePath
+                  -> SpecBuilder a 
+                  -> IO ()
+renderSpecTeXFile fn = T.writeFile fn . renderSpecTeX
 
 renderSpecTeX :: SpecBuilder a 
               -> Text
-renderSpecTeX (SpecBuilder cmd) = T.render . specToTeX . execWriter $ cmd
+renderSpecTeX (SpecBuilder cmd) = T.render . specToTeX . snd $ execRWS cmd 1 ()
 
 verifySpec :: SpecBuilder a -> IO ()
 verifySpec spec = runEffect $ verifySpec' Render spec >-> P.stdoutLn
@@ -124,7 +117,7 @@ verifySpec' :: SpecOpt
             -> SpecBuilder a 
             -> Producer String IO ()
 verifySpec' opt (SpecBuilder cmd) = do
-        let ss  = execWriter cmd
+        let ss  = snd $ execRWS cmd 1 ()
             thys = [ arithmetic
                    , function_theory
                    , set_theory
@@ -241,9 +234,15 @@ includeTableAsm t = SpecBuilder $ tell $ mempty
 table :: LaTeX -> M LaTeXLI () -> SpecBuilder ()
 table v t = includeTable $ makeTable v t
 
-text :: String -> SpecBuilder ()
-text str = SpecBuilder $ tell $ mempty 
-        { _specs = Content [Left str] }
+title :: String -> SpecBuilder ()
+title = liftDoc . Title 0
 
-paragraph :: SpecBuilder a -> SpecBuilder a
-paragraph txt = text "\n" >> txt <* text "\n"
+liftDoc :: Doc -> SpecBuilder ()
+liftDoc doc = SpecBuilder $ tell $ mempty 
+        { _specs = Content [Left doc] }
+
+section :: String -> SpecBuilder a -> SpecBuilder a
+section t (SpecBuilder cmd) = do
+    lvl <- SpecBuilder ask
+    liftDoc $ Title lvl t
+    SpecBuilder $ local succ cmd

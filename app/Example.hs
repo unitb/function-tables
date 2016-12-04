@@ -3,6 +3,7 @@ module Example where
 
 import UnitB.FunctionTable as T
 import UnitB.FunctionTable.Spec as T
+import UnitB.FunctionTable.Spec.Doc as T
 import Text.LaTeX.FunctionTable as T
 
 md_ft :: FunctionTable LaTeXLI 
@@ -44,6 +45,7 @@ al_ft = makeTable                                                 [T.tex|\cAl|] 
                     cell [T.tex|\heldfor \land \neg \hysteresis|] [T.tex|\sOff|] 
 
 
+isolette :: SpecBuilder ()
 isolette = do
             enumSort "Status" [("sOff","off"),("sOn","on")]
             enumSort' "Mode"   ["off","normal","init","fail"]

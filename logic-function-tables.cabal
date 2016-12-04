@@ -18,6 +18,7 @@ library
   exposed-modules:     
       UnitB.FunctionTable
       UnitB.FunctionTable.Spec
+      UnitB.FunctionTable.Spec.Doc
       UnitB.FunctionTable.Spec.LaTeX
       UnitB.FunctionTable.Spec.Markdown
       UnitB.FunctionTable.Spec.Types
@@ -47,7 +48,7 @@ library
                      , th-printf
                      , zlib < 0.6.1.2
   default-language:    Haskell2010
-  default-extensions:    DeriveFunctor, DeriveFoldable, DeriveTraversable, DeriveGeneric, GeneralizedNewtypeDeriving, FlexibleContexts, MultiParamTypeClasses, TypeSynonymInstances, FlexibleInstances
+  default-extensions:    DeriveFunctor, DeriveFoldable, DeriveTraversable, DeriveGeneric, GeneralizedNewtypeDeriving, FlexibleContexts, MultiParamTypeClasses, TypeSynonymInstances, FlexibleInstances, TypeFamilies
 
 executable logic-function-tables-exe
   hs-source-dirs:      app

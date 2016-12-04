@@ -3,38 +3,46 @@ module UnitB.FunctionTable.Spec.Markdown where
 
 import Control.Lens
 import Control.Monad.Writer
-import Data.Maybe
-import Data.Text (pack,unpack)
+import Data.Bifunctor
+import Data.List as L
+import Data.Text as T (pack,unpack,replicate,unlines)
 
 import TeX2PNG
 
 import System.Directory
 import System.FilePath
 
-import Text.LaTeX
+import Text.LaTeX hiding ((&),between)
 import Text.LaTeX.FunctionTable
 import Text.Printf.TH
 
+import UnitB.FunctionTable.Spec.Doc
 import UnitB.FunctionTable.Spec.LaTeX
 import UnitB.FunctionTable.Spec.Types
 
-specToMD :: TeXSpec -> IO Text
-specToMD sys = execWriterT $ do
-        xs <- forM (zip [0..] $ contents $ sys^.specs) $ \(i,ln) -> do
+newtype Markdown = Markdown { unMD :: Text }
+    deriving (Eq,Ord,Monoid,IsString)
+
+specToMD :: TeXSpec -> IO Markdown
+specToMD sys = runDocT $ do
+        cd <- liftIO getCurrentDirectory
+        forM_ (zip [0..] $ contents $ sys^.specs) $ \(i,ln) -> do
             case ln of
                 Left  str   -> do
-                    tell $ pack str <> "\n"
-                    return Nothing
+                    tell [str]
+                    -- return Nothing
                 Right (_b,tbl) -> do
                     r <- lift $ tableImage ([s|table%d|] i) ps def tbl
-                    tell $ pack $ [s|![alt text][table%d] \n |] i
-                    return $ Just (i,r)
-        cd <- liftIO getCurrentDirectory
-        forM_ (catMaybes xs) $ \(i,ref) -> do
-            either 
-                (fail . unpack) 
-                (tell . pack . [s|[table%d]: %s\n|] i . makeRelative cd) 
-                ref
+                    -- either _ (tell [Ct $ Image "alt text" $ [s|table%d|] i]) r
+                    either (fail . unpack) 
+                           (tell . pure . Ct . Image "alt text" . makeRelative cd) 
+                           r
+                    -- return $ Just (i,r)
+        -- forM_ (catMaybes xs) $ \(i,ref) -> do
+        --     either 
+        --         (fail . unpack) 
+        --         (tell . Markdown . pack . [s|[table%d]: %s\n|] i . makeRelative cd) 
+        --         ref
     where
         def =   mathComm' "dom"
              <> renewcommand "between" 3 (raw "#1 \\le #2 \\le #3")
@@ -57,3 +65,31 @@ tableImage fn ps h t = mkPNG (do
                     tightness .= True ) $
         -- render h <> "\\begin{align*} x + y \\\\ y - x \\end{align*}"
         render h <> render t
+ 
+instance DocFormat Markdown where
+    renderDoc (Title lvl t) = Markdown $ "\n" <> T.replicate (lvl + 1) "#" <> pack (" " ++ t ++ "\n")
+    renderDoc (Ct t) = Markdown $ T.unlines $ L.map (uncurry $ (<>) . pack) $ contentToMD t
+        where
+            contentToMD (Line "") = [("","")]
+            contentToMD (Line ln) = L.map (((,) "") . pack) $ L.lines ln
+            contentToMD (Item ls) = concat $ L.map (indentWith " * " "   " . contentToMD) ls
+            contentToMD (Enum ls) = concat $ L.zipWith (\n -> indentWith' n . contentToMD) [1..] ls
+                where
+                    indentWith' n = indentWith x $ L.replicate (length x) ' '
+                        where
+                            x = " " ++ show n ++ ". "
+            contentToMD (Image tag fn) = between "![" "  " (contentToMD tag) (pack $ [s|](%s)|] fn)
+            contentToMD (Link tag fn)  = between "[" " " (contentToMD tag) (pack $ [s|](%s)|] fn)
+            contentToMD (Seq x y)  = contentToMD x <> contentToMD y
+            contentToMD Nil  = mempty
+            contentToMD (Verbatim xs) = L.map (((,) "") . pack) $ ["```"] ++ L.lines xs ++ ["```"]
+    -- func = 
+
+between :: (Monoid a,Monoid b) => a -> a -> [(a,b)] -> b -> [(a,b)]
+between x x' xs y 
+        | null xs   = [(x,y)]
+        | otherwise = xs &~ do
+                _Cons %= bimap (first (x <>)) (L.map $ first (x' <>))
+                _last._2 %= (<> y)
+indentWith :: Monoid a => a -> a -> [(a,b)] -> [(a,b)]
+indentWith x y = _Cons %~ bimap (first (x <>)) (L.map $ first (y <>))

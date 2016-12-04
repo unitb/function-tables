@@ -12,10 +12,12 @@ import Logic.Expr as N hiding (array)
 import Text.LaTeX as T hiding (tex,(&))
 import Text.LaTeX.FunctionTable as T
 
+import UnitB.FunctionTable.Spec.Doc
+
 type Primed = Bool
 type SpecE = Spec (Map Expr) Expr VarDeclE Def
-type TeXSpec = Spec Content LaTeXLI VarDeclT LaTeXLI
-newtype Content a = Content { contents :: [Either String a] }
+type TeXSpec = Spec SpecContent LaTeXLI VarDeclT LaTeXLI
+newtype SpecContent a = Content { contents :: [Either Doc a] }
     deriving (Functor,Foldable,Traversable,Generic)
 data VarDeclT = VarDeclT (Type -> Type) LaTeXLI Primed
 data VarDeclE = VarDeclE Var (Maybe Expr)
@@ -43,9 +45,9 @@ instance HasDecl VarDeclE Var where
 wd :: VarDeclE -> Maybe Expr
 wd (VarDeclE _ d) = d
 
-instance Monoid (Content a) where
+instance Monoid (SpecContent a) where
     mappend = genericMAppend
     mempty  = genericMEmpty
-instance t ~ Content => Monoid (Spec t a var def) where
+instance t ~ SpecContent => Monoid (Spec t a var def) where
     mappend = genericMAppend
     mempty  = genericMEmpty
