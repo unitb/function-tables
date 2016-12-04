@@ -65,7 +65,10 @@ isolette = do
             monitored "al" "\\Int"
             monitored "ah" "\\Int"
             includeTableAsm md_ft
-            text 
-                [ "This is text" 
-                , "what do you mean?" ]
+            "This is text" 
+            "what do you mean?"
+            paragraph $ do
+                "This is more text"
+                "What???"
+                "MORE TEXT!!!"
             mapM_ includeTable [hc_ft,al_ft]

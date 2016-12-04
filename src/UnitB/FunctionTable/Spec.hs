@@ -3,7 +3,10 @@
         ,TypeFamilies
         ,QuasiQuotes
         ,TupleSections #-}
-module UnitB.FunctionTable.Spec where
+module UnitB.FunctionTable.Spec 
+    ( module UnitB.FunctionTable.Spec 
+    , FunctionTable )
+where
 
 import Control.Applicative
 import Control.Concurrent.Async
@@ -19,9 +22,6 @@ import Data.List as L
 import Data.Map as M
 import Data.Text hiding (toUpper)
 
--- import GHC.Generics
-import GHC.Generics.Instances
-
 import Logic.Expr as N hiding (array)
 import Logic.Expr.Parser
 import Logic.QuasiQuote
@@ -33,56 +33,20 @@ import qualified Pipes.Prelude as P
 import System.Process
 
 import Text.LaTeX as T hiding (tex,(&))
-import Text.LaTeX.Base.Class hiding (fromLaTeX)
 import Text.LaTeX.FunctionTable as T
 import Text.LaTeX.Internal.FunctionTable as T hiding (Pre)
-import Text.LaTeX.Packages.AMSMath hiding (to)
+import Text.LaTeX.Packages.AMSMath hiding (to,text)
 
 import Text.Printf.TH
 
 import UnitB.FunctionTable as T
+import UnitB.FunctionTable.Spec.LaTeX as T
+import UnitB.FunctionTable.Spec.MarkDown as T
+import UnitB.FunctionTable.Spec.Types as T
 
 import Utilities.Syntactic
 
 import Z3.Z3 (Validity (..))
-
-type Primed = Bool
-type SpecE = Spec (Map Expr) Expr VarDeclE Def
-type TeXSpec = Spec Content LaTeXLI VarDeclT LaTeXLI
-newtype Content a = Content { contents :: [Either LaTeX a] }
-    deriving (Functor,Foldable,Traversable,Generic)
-data VarDeclT = VarDeclT (Type -> Type) LaTeXLI Primed
-data VarDeclE = VarDeclE Var (Maybe Expr)
-
-data Spec t a var def = Spec 
-        { _newCommands :: LaTeX  
-        , specPrefix  :: LaTeX 
-        , _sortDecl   :: Map Name Sort
-        , _dataCons   :: Map Name Def
-        , _userDef    :: Map Name def
-        , _userConst  :: Map Name var
-        , _specs :: t (Bool,FunctionTable a) }
-    deriving (Generic)
-
-makeLenses ''Spec
-
-class HasDecl decl v where
-    decl :: Lens' decl v
-
-instance HasDecl VarDeclT LaTeXLI where
-    decl f (VarDeclT g d p) = (\d' -> VarDeclT g d' p) <$> f d
-instance HasDecl VarDeclE Var where
-    decl f (VarDeclE d wd) = (\d' -> VarDeclE d' wd) <$> f d
-
-wd :: VarDeclE -> Maybe Expr
-wd (VarDeclE _ d) = d
-
-instance Monoid (Content a) where
-    mappend = genericMAppend
-    mempty  = genericMEmpty
-instance t ~ Content => Monoid (Spec t a var def) where
-    mappend = genericMAppend
-    mempty  = genericMEmpty
 
 -- traverse3 :: Applicative f
 --           => (a -> f a')
@@ -106,6 +70,9 @@ instance t ~ Content => Monoid (Spec t a var def) where
 
 newtype SpecBuilder a = SpecBuilder (Writer TeXSpec a)
     deriving (Functor,Applicative,Monad)
+
+instance a ~ () => IsString (SpecBuilder a) where
+    fromString t = text t
 
 zinit :: ExprP
 zinit = Right $ Word $ Var [N.tex|\INIT|] bool
@@ -140,9 +107,13 @@ parseSpec s0 = do
         specs (fmap makeTable . (traverseValidation._2) (parseTable parser') . rights . contents) s2
         -- specs (fmap makeTable . traverseValidation (parseTable parser')) s2
 
-renderSpec :: SpecBuilder a 
-           -> Text
-renderSpec (SpecBuilder cmd) = T.render . specToDoc . execWriter $ cmd
+renderSpecMD :: SpecBuilder a 
+             -> IO Text
+renderSpecMD (SpecBuilder cmd) = specToMD . execWriter $ cmd
+
+renderSpecTeX :: SpecBuilder a 
+              -> Text
+renderSpecTeX (SpecBuilder cmd) = T.render . specToTeX . execWriter $ cmd
 
 verifySpec :: SpecBuilder a -> IO ()
 verifySpec spec = runEffect $ verifySpec' Render spec >-> P.stdoutLn
@@ -161,7 +132,7 @@ verifySpec' opt (SpecBuilder cmd) = do
                    , basic_theory]
         case opt of
             Render -> do
-                liftIO $ renderFile "table.tex" (specToDoc ss)
+                liftIO $ renderFile "table.tex" (specToTeX ss)
                 _ <- liftIO $ rawSystem "pdflatex" ["table.tex"]
                 return ()
             DoNotRender -> return ()
@@ -192,24 +163,6 @@ verifySpec' opt (SpecBuilder cmd) = do
                                 decls %= M.union (M.map (view decl) $ ss'^.userConst)) id
             Left es -> yield . show_err $ es
         return ()
-
-specToDoc :: TeXSpec -> LaTeX
-specToDoc s = 
-    documentclass [] article
- <> usepackage [] "multirow"
- <> usepackage [] "amsmath"
- <> usepackage [] "amssymb"
- -- <> title "A short message"
- -- <> author "John Short"
- -- <> author "John Short"
- -- <> comm1 "newcommand" (raw "\\dom") <> braces (textsf "dom")
- <> mathComm' "dom"
- <> renewcommand "between" 3 (raw "#1 \\le #2 \\le #3")
- -- <> renewcommand "between" 3 (raw "#1 \\1\\le #2 \\1\\le #3")
- <> s^.newCommands
- <> document (mconcat $ L.intersperse (lnbk <> lnbk :: LaTeX) 
-        $ either id (rendertex.snd) <$> contents (s^.specs))
-
 
 declSort :: Pre => LaTeX -> SpecBuilder ()
 declSort t = SpecBuilder $ tell $ mempty 
@@ -279,49 +232,18 @@ controlled n t = SpecBuilder $ tell $ mempty
 
 includeTable :: FunctionTable LaTeXLI -> SpecBuilder ()
 includeTable t = SpecBuilder $ tell $ mempty
-        { _specs = Content [Right (False,t)] } 
+        { _specs = Content [Left "\n\n",Right (False,t),Left "\n\n"] } 
 
 includeTableAsm :: FunctionTable LaTeXLI -> SpecBuilder ()
 includeTableAsm t = SpecBuilder $ tell $ mempty
-        { _specs = Content [Right (True,t)] } 
+        { _specs = Content [Left "\n\n",Right (True,t),Left "\n\n"] } 
 
 table :: LaTeX -> M LaTeXLI () -> SpecBuilder ()
 table v t = includeTable $ makeTable v t
 
-mathComm' :: LaTeXC t 
-          => Text 
-          -> t
-mathComm' txt = mathComm txt (textsf $ rendertex txt)
+text :: String -> SpecBuilder ()
+text str = SpecBuilder $ tell $ mempty 
+        { _specs = Content [Left str] }
 
-mathComm :: LaTeXC t 
-         => Text 
-         -> t 
-         -> t
-mathComm c txt = comm1 "newcommand" (raw $ "\\" <> c) <> braces txt
-
-newcommand :: LaTeXC t 
-           => Text 
-           -> Int
-           -> t 
-           -> t
-newcommand c n txt = commS "newcommand" 
-                <> braces (raw $ "\\" <> c) 
-                <> liftL (\t -> raw "[" <> t <> raw "]") (fromString $ show n)
-                <> braces txt
-
-renewcommand :: LaTeXC t 
-             => Text 
-             -> Int
-             -> t 
-             -> t
-renewcommand c n txt = commS "renewcommand" 
-                <> braces (raw $ "\\" <> c) 
-                <> liftL (\t -> raw "[" <> t <> raw "]") (fromString $ show n)
-                <> braces txt
-
-arg :: LaTeXC t => Int -> t 
-arg n = raw $ "#" <> pack (show n)
-
-text :: [LaTeX] -> SpecBuilder ()
-text xs = SpecBuilder $ tell $ mempty 
-        { _specs = Content [Left $ mconcat $ L.intersperse " " xs] }
+paragraph :: SpecBuilder a -> SpecBuilder a
+paragraph txt = text "\n" >> txt <* text "\n"

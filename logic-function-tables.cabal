@@ -18,11 +18,15 @@ library
   exposed-modules:     
       UnitB.FunctionTable
       UnitB.FunctionTable.Spec
+      UnitB.FunctionTable.Spec.LaTeX
+      UnitB.FunctionTable.Spec.MarkDown
+      UnitB.FunctionTable.Spec.Types
   build-depends:       base >= 4.7 && < 5
                      , async
                      , bifunctors
                      , containers
                      , control-invariants
+                     , directory
                      , either
                      , filepath
                      , generic-instances
@@ -39,6 +43,7 @@ library
                      , syntax-error
                      , template-haskell
                      , text
+                     , tex2png-hs
                      , th-printf
                      , zlib < 0.6.1.2
   default-language:    Haskell2010
@@ -60,6 +65,7 @@ executable logic-function-tables-exe
                      , mtl
                      , process
                      , syntax-error
+                     , text
                      , th-printf
   default-language:    Haskell2010
 

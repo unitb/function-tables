@@ -10,3 +10,8 @@ Verification of function table specifications
 * Adaptive cell height based on contents
 * Generate MarkDown code from specification (E.g. to create this readme)
 
+Reference-style: 
+
+![alt text][logo]
+
+[logo]: b7178c0ada3ed91a03d4a548daa64dec5da6509022d06def984dddd14d866235.png 
