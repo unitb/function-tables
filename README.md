@@ -33,8 +33,8 @@ is specified by the following Haskell code (in README.hs):
                 monitored "sw" "Status"
                 constant "initOk" "\\Bool"
                 monitored "st" "Validity"
-                table                                                [T.tex|\cMd| ] $ do
-                    cell [T.tex|\INIT \lor \mSw = \sOff| ]            [T.tex|\off| ] 
+                table                                                  [T.tex|\cMd| ] $ do
+                    cell [T.tex|\INIT \lor \mSw = \sOff| ]             [T.tex|\off| ] 
                     branch (conjList 
                             [ [T.tex|\neg \INIT| ]
                             , [T.tex|\neg \mSw = \sOff| ] ]) $ do
@@ -45,7 +45,7 @@ is specified by the following Haskell code (in README.hs):
                         branch [T.tex|\preCMd \in \{\normal,\fail\} | ] $ do
                             cell [T.tex|\mSt = \valid| ]               [T.tex|\normal| ]
                             cell [T.tex|\mSt = \invalid \lor \preCMd = \fail| ]             
-                                                                  [T.tex|\fail| ] 
+                                                                       [T.tex|\fail| ] 
 ```
 
 The verification results can be obtained by replacing
