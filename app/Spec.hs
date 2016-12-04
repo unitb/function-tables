@@ -6,8 +6,8 @@ import Control.Lens
 
 import Data.Bitraversable
 import Data.List as L
-import Data.Map as M
-import Data.Text (Text)
+import Data.Map  as M
+import Data.Text as T (Text,unlines,intercalate)
 
 import Example
 
@@ -59,7 +59,7 @@ suite = test_cases
             , aCase "LaTeX rendering" case1 result1 ]
 
 case0 :: IO String
-case0 = fmap unlines . P.toListM $ verifySpec' DoNotRender isolette
+case0 = fmap L.unlines . P.toListM $ verifySpec' DoNotRender isolette
 
 result0 :: String
 result0 = L.unlines
@@ -103,7 +103,7 @@ case1 :: IO Text
 case1 = return $ renderSpecTeX isolette
 
 result1 :: Text
-result1 = mconcat
+result1 = T.intercalate "\n"
     [ "\\documentclass{article}\\usepackage{multirow}\\usepackage{amsmath}\\usepackage{amssymb}\\newcommand{\\dom}{\\textsf{dom}}\\renewcommand{\\between}[3]{#1 \\le #2 \\le #3}\\newcommand{\\sOff}{\\textit{off}}\\newcommand{\\sOn}{\\textit{on}}\\newcommand{\\off}{\\textit{off}}\\newcommand{\\normal}{\\textit{normal}}\\newcommand{\\init}{\\textit{init}}\\newcommand{\\fail}{\\textit{fail}}\\newcommand{\\valid}{\\textit{valid}}\\newcommand{\\invalid}{\\textit{invalid}}\\newcommand{\\INIT}{\\textsf{INIT}}\\newcommand{\\initOk}{\\textsf{initOk}}\\newcommand{\\problem}{\\textsf{problem}}\\newcommand{\\hysteresis}{\\textsf{hysteresis}}\\newcommand{\\heldfor}{\\textsf{heldfor}}\\newcommand{\\validRange}{validRange}\\newcommand{\\cMd}{\\textsf{c\\_{}md}}\\newcommand{\\preCMd}{{\\textsf{c\\_{}md}}_{-1}}\\newcommand{\\cHc}{\\textsf{c\\_{}hc}}\\newcommand{\\preCHc}{{\\textsf{c\\_{}hc}}_{-1}}\\newcommand{\\cAl}{\\textsf{c\\_{}al}}\\newcommand{\\preCAl}{{\\textsf{c\\_{}al}}_{-1}}\\newcommand{\\mSw}{\\textsf{m\\_{}sw}}\\newcommand{\\preMSw}{{\\textsf{m\\_{}sw}}_{-1}}\\newcommand{\\mSt}{\\textsf{m\\_{}st}}\\newcommand{\\preMSt}{{\\textsf{m\\_{}st}}_{-1}}\\newcommand{\\mTm}{\\textsf{m\\_{}tm}}\\newcommand{\\preMTm}{{\\textsf{m\\_{}tm}}_{-1}}\\newcommand{\\mDl}{\\textsf{m\\_{}dl}}\\newcommand{\\preMDl}{{\\textsf{m\\_{}dl}}_{-1}}\\newcommand{\\mDh}{\\textsf{m\\_{}dh}}\\newcommand{\\preMDh}{{\\textsf{m\\_{}dh}}_{-1}}\\newcommand{\\mAl}{\\textsf{m\\_{}al}}\\newcommand{\\preMAl}{{\\textsf{m\\_{}al}}_{-1}}\\newcommand{\\mAh}{\\textsf{m\\_{}ah}}\\newcommand{\\preMAh}{{\\textsf{m\\_{}ah}}_{-1}}\\begin{document}"
     , ""
     , ""
