@@ -39,11 +39,11 @@ import Text.LaTeX.Packages.AMSMath hiding (to,text)
 
 import Text.Printf.TH
 
-import UnitB.FunctionTable as T
 import UnitB.FunctionTable.Spec.Doc as T
 import UnitB.FunctionTable.Spec.LaTeX as T
 import UnitB.FunctionTable.Spec.Markdown as T
 import UnitB.FunctionTable.Spec.Types as T
+import UnitB.FunctionTable.Verifier as T
 
 import Utilities.Syntactic
 

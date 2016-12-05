@@ -9,8 +9,10 @@ Verification of function table specifications
 ## TODO
  1. ~~Adaptive cell height based on contents~~
  2. ~~Add bold, italics and strikethrough~~
- 3. Color table cells based on verification results
- 4. Add a command to automatically insert the verification results in the document
+ 3. ~~Make UnitB.FunctionTable the one-stop module for all the eDSL~~
+ 4. Add support for held-for
+ 5. Color table cells based on verification results
+ 6. Add a command to automatically insert the verification results in the document
 
 
 ## Example
@@ -33,19 +35,19 @@ controlled "md" "Mode"
 monitored "sw" "Status"
 constant "initOk" "\\Bool"
 monitored "st" "Validity"
-table                                                  [T.tex|\cMd| ] $ do
-    cellH 2 [T.tex|\INIT \lor \mSw = \sOff| ]          [T.tex|\off| ] 
-    branch (conjList 
-            [ [T.tex|\neg \INIT| ]
-            , [T.tex|\neg \mSw = \sOff| ] ]) $ do
-        cell [T.tex|\preCMd = \off| ]                  [T.tex|\init| ]
-        branch [T.tex|\preCMd = \init| ] $ do
-            cell [T.tex|\neg \initOk| ]                [T.tex|\init| ]
-            cell [T.tex|\initOk| ]                     [T.tex|\normal| ]
-        branch [T.tex|\preCMd \in \{\normal,\fail\} | ] $ do
-            cell [T.tex|\mSt = \valid| ]               [T.tex|\normal| ]
-            cell [T.tex|\mSt = \invalid \lor \preCMd = \fail| ]             
-                                                       [T.tex|\fail| ] 
+table                                            [tex|\cMd| ] $ do
+  cellH 2 [tex|\INIT \lor \mSw = \sOff| ]        [tex|\off| ] 
+  branch (conjList 
+      [ [tex|\neg \INIT| ]
+      , [tex|\neg \mSw = \sOff| ] ]) $ do
+    cell [tex|\preCMd = \off| ]                  [tex|\init| ]
+    branch [tex|\preCMd = \init| ] $ do
+      cell [tex|\neg \initOk| ]                  [tex|\init| ]
+      cell [tex|\initOk| ]                       [tex|\normal| ]
+    branch [tex|\preCMd \in \{\normal,\fail\} | ] $ do
+      cell [tex|\mSt = \valid| ]                 [tex|\normal| ]
+      cell [tex|\mSt = \invalid \lor \preCMd = \fail| ]             
+                                                 [tex|\fail| ] 
 ```
 
 The verification results can be obtained by replacing

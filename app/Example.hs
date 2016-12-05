@@ -1,48 +1,45 @@
 {-# LANGUAGE QuasiQuotes,OverloadedStrings #-}
 module Example where
 
-import UnitB.FunctionTable as T
-import UnitB.FunctionTable.Spec as T
-import UnitB.FunctionTable.Spec.Doc as T
-import Text.LaTeX.FunctionTable as T
+import UnitB.FunctionTable
 
 md_ft :: FunctionTable LaTeXLI 
-md_ft = makeTable                                            [T.tex|\cMd|] $ do
-            cell [T.tex|\INIT \lor \mSw = \sOff|]            [T.tex|\off|] 
+md_ft = makeTable                                           [tex|\cMd|] $ do
+            cell [tex|\INIT \lor \mSw = \sOff|]             [tex|\off|] 
                     -- there should be an error sOff is not the same time cMd
-            -- cell [T.tex|\neg \INIT \land \neg \mSw = \sOff|] [T.tex|\off|]
+            -- cell [tex|\neg \INIT \land \neg \mSw = \sOff|] [tex|\off|]
             branch (conjList 
-                    [ [T.tex|\neg \INIT|]
-                    , [T.tex|\neg \mSw = \sOff|] ]) $ do
-                cell [T.tex|\preCMd = \off|]                  [T.tex|\init|]
-                branch [T.tex|\preCMd = \init|] $ do
-                    cell [T.tex|\neg \initOk|]                [T.tex|\init|]
-                    cell [T.tex|\initOk|]                     [T.tex|\normal|]
-                branch [T.tex|\preCMd \in \{\normal,\fail\} |] $ do
-                    cell [T.tex|\mSt = \valid|]               [T.tex|\normal|]
-                    cell [T.tex|\mSt = \invalid|]             [T.tex|\fail|]
+                    [ [tex|\neg \INIT|]
+                    , [tex|\neg \mSw = \sOff|] ]) $ do
+                cell [tex|\preCMd = \off|]                  [tex|\init|]
+                branch [tex|\preCMd = \init|] $ do
+                    cell [tex|\neg \initOk|]                [tex|\init|]
+                    cell [tex|\initOk|]                     [tex|\normal|]
+                branch [tex|\preCMd \in \{\normal,\fail\} |] $ do
+                    cell [tex|\mSt = \valid|]               [tex|\normal|]
+                    cell [tex|\mSt = \invalid|]             [tex|\fail|]
 
 hc_ft :: FunctionTable LaTeXLI
-hc_ft = makeTable                                              [T.tex|\cHc|] $ do
-            cellH 2 [T.tex|\INIT \lor \mSt = \invalid \lor \neg \validRange \lor \mSw = \sOff |] 
-                                                               [T.tex|\sOff|]
+hc_ft = makeTable                                              [tex|\cHc|] $ do
+            cellH 2 [tex|\INIT \lor \mSt = \invalid \lor \neg \validRange \lor \mSw = \sOff |] 
+                                                               [tex|\sOff|]
             branch (conjList 
-                    [ [T.tex|\neg \INIT|] 
-                    , [T.tex|\mSt = \valid|] 
-                    , [T.tex|\validRange |]
-                    , [T.tex| \mSw = \sOn |] ]) $ do
-                cellH 2 [T.tex|\mTm < \mDl|]                      [T.tex|\sOn|]
-                cellH 2 [T.tex|\between{\mDl}{\mTm}{\mDh}|]       [T.tex|\preCHc|]
-                cellH 2 [T.tex|\mDh < \mTm|]                      [T.tex|\sOff|]
+                    [ [tex|\neg \INIT|] 
+                    , [tex|\mSt = \valid|] 
+                    , [tex|\validRange |]
+                    , [tex| \mSw = \sOn |] ]) $ do
+                cellH 2 [tex|\mTm < \mDl|]                      [tex|\sOn|]
+                cellH 2 [tex|\between{\mDl}{\mTm}{\mDh}|]       [tex|\preCHc|]
+                cellH 2 [tex|\mDh < \mTm|]                      [tex|\sOff|]
 
 al_ft :: FunctionTable LaTeXLI
-al_ft = makeTable                                                 [T.tex|\cAl|] $ do
-            cell [T.tex|\cMd \in \{ \off, \init \} |]             [T.tex|\sOff|]
-            branch [T.tex|\cMd \in \{ \normal, \fail \} |] $ do
-                cell [T.tex|\problem|]                            [T.tex|\sOn|] 
-                branch [T.tex|\neg \problem|] $ do 
-                    cell [T.tex|\neg \heldfor \lor \hysteresis|]  [T.tex|\preCAl|] 
-                    cell [T.tex|\heldfor \land \neg \hysteresis|] [T.tex|\sOff|] 
+al_ft = makeTable                                               [tex|\cAl|] $ do
+            cell [tex|\cMd \in \{ \off, \init \} |]             [tex|\sOff|]
+            branch [tex|\cMd \in \{ \normal, \fail \} |] $ do
+                cell [tex|\problem|]                            [tex|\sOn|] 
+                branch [tex|\neg \problem|] $ do 
+                    cell [tex|\neg \heldfor \lor \hysteresis|]  [tex|\preCAl|] 
+                    cell [tex|\heldfor \land \neg \hysteresis|] [tex|\sOff|] 
 
 
 isolette :: SpecBuilder ()
@@ -55,7 +52,7 @@ isolette = do
             constant "problem"    "\\Bool"
             constant "hysteresis" "\\Bool"
             constant "heldfor" "\\Bool"
-            definition "validRange" [T.tex| \between{\mAl}{\mDl}{\mDh} \land \mDh < \mAh |]
+            definition "validRange" [tex| \between{\mAl}{\mDl}{\mDh} \land \mDh < \mAh |]
             controlled "md" "Mode"
             controlled "hc" "Status"
             controlled "al" "Status"
