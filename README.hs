@@ -18,8 +18,8 @@ main = do
         "Verification of function table specifications"
         section "TODO" $ do
             listNum $ do
-                item "Color table cells based on verification results"
                 item "Adaptive cell height based on contents"
+                item "Color table cells based on verification results"
                 item "Add a command to automatically insert the verification results in the document"
         ""
         section "Example" $ do
@@ -51,7 +51,7 @@ main = do
             ""
             "is specified by the following Haskell code (in README.hs):"
             ""
-            [verbatim| 
+            [syntax|haskell|
                 enumSort "Status" [("sOff","off"),("sOn","on")]
                 enumSort' "Mode"   ["off","normal","init","fail"]
                 enumSort' "Validity" ["valid","invalid"]

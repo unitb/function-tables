@@ -60,7 +60,7 @@ tableImage :: Render t
 tableImage fn ps h t = mkPNG (do 
                     math .= False 
                     out  .= Just fn
-                    bg   .= SimplyTransparent
+                    bg   .= AlphaTransparent
                     pkgs .= ps
                     tightness .= True ) $
         -- render h <> "\\begin{align*} x + y \\\\ y - x \\end{align*}"
@@ -82,7 +82,9 @@ instance DocFormat Markdown where
             contentToMD (Link tag fn)  = between "[" " " (contentToMD tag) (pack $ [s|](%s)|] fn)
             contentToMD (Seq x y)  = contentToMD x <> contentToMD y
             contentToMD Nil  = mempty
-            contentToMD (Verbatim xs) = L.map (((,) "") . pack) $ ["```"] ++ L.lines xs ++ ["```"]
+            contentToMD (Verbatim lang xs) = L.map (((,) "") . pack) $ ["```" ++ lang'] ++ L.lines xs ++ ["```"]
+                where
+                    lang' = maybe "" id lang
     -- func = 
 
 between :: (Monoid a,Monoid b) => a -> a -> [(a,b)] -> b -> [(a,b)]

@@ -41,6 +41,7 @@ library
                      , process
                      , primitive < 0.6.2
                      , semigroups
+                     , string-lenses
                      , syntax-error
                      , template-haskell
                      , text

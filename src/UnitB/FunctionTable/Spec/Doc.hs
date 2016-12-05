@@ -1,11 +1,17 @@
 {-# LANGUAGE TemplateHaskell #-}
 module UnitB.FunctionTable.Spec.Doc where
 
+import Control.Lens
 import Control.Monad.Writer
-import Data.Functor.Identity
-import Data.String
+import Data.Char
+import Data.List.Lens
+import Data.String hiding (lines)
+import Data.String.Lines
 
-import GHC.Generics
+import Prelude hiding (lines)
+
+import GHC.Generics (Generic)
+import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 
 data Doc = 
@@ -23,7 +29,7 @@ data Content =
         | Link  Content URI
         | Seq Content Content
         | Nil
-        | Verbatim String
+        | Verbatim (Maybe String) String
     deriving (Eq,Ord,Show,Generic)
 
 class Monoid out => DocFormat out where
@@ -103,9 +109,30 @@ link (ContentWriter cmd) lnk = do
         emitContent $ Link (mconcat is) lnk
         return x
 
+trimLines :: String -> String
+trimLines xs 
+        | Just n' <- n = xs & traverseLines %~ drop n'
+        | otherwise = xs
+    where
+        n = minimumOf (traverse.filtered (not . all isSpace).to (length.takeWhile (' ' ==))) $ lines xs
+
 verbatim :: QuasiQuoter 
 verbatim = QuasiQuoter
-     { quoteExp  = \s -> [| emitContent $ Verbatim s |] 
+     { quoteExp  = \s -> [| emitContent $ Verbatim Nothing $ trimLines s |] 
+     , quoteDec  = undefined 
+     , quoteType = undefined 
+     , quotePat  = undefined }
+
+quoteSyntax :: String -> ExpQ
+quoteSyntax xs 
+        | Just s' <- s^?prefixed "|" = [| emitContent $ Verbatim (Just lang) $ trimLines s' |] 
+        | otherwise                  = error "invalid syntax: expecting '|'"
+    where
+        (lang,s) = span (/= '|') xs
+
+syntax :: QuasiQuoter 
+syntax = QuasiQuoter
+     { quoteExp  = quoteSyntax
      , quoteDec  = undefined 
      , quoteType = undefined 
      , quotePat  = undefined }

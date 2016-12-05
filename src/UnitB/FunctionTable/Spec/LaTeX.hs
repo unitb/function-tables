@@ -76,7 +76,7 @@ instance DocFormat LaTeX where
     renderDoc (Ct t) = contentToTeX t
         where
             contentToTeX (Line ln) = fromString ln
-            contentToTeX (Verbatim ln) = T.verbatim $ pack ln
+            contentToTeX (Verbatim _ ln) = T.verbatim $ pack ln
             contentToTeX (Item ls) = itemize $ mconcat $ (item Nothing <>) . contentToTeX <$> ls
             contentToTeX (Enum ls) = enumerate $ mconcat $ (item Nothing <>) . contentToTeX <$> ls
             -- contentToTeX (Image _tag path) = includegraphics [] path
