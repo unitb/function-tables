@@ -7,9 +7,10 @@ Linux / OSX:
 Verification of function table specifications
 
 ## TODO
- 1. Color table cells based on verification results
- 2. Adaptive cell height based on contents
- 3. Add a command to automatically insert the verification results in the document
+ 1. ~~Adaptive cell height based on contents~~
+ 2. ~~Add bold, italics and strikethrough~~
+ 3. Color table cells based on verification results
+ 4. Add a command to automatically insert the verification results in the document
 
 
 ## Example
@@ -33,7 +34,7 @@ monitored "sw" "Status"
 constant "initOk" "\\Bool"
 monitored "st" "Validity"
 table                                                  [T.tex|\cMd| ] $ do
-    cell [T.tex|\INIT \lor \mSw = \sOff| ]             [T.tex|\off| ] 
+    cellH 2 [T.tex|\INIT \lor \mSw = \sOff| ]          [T.tex|\off| ] 
     branch (conjList 
             [ [T.tex|\neg \INIT| ]
             , [T.tex|\neg \mSw = \sOff| ] ]) $ do

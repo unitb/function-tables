@@ -24,16 +24,16 @@ md_ft = makeTable                                            [T.tex|\cMd|] $ do
 
 hc_ft :: FunctionTable LaTeXLI
 hc_ft = makeTable                                              [T.tex|\cHc|] $ do
-            cell [T.tex|\INIT \lor \mSt = \invalid \lor \neg \validRange \lor \mSw = \sOff |] 
+            cellH 2 [T.tex|\INIT \lor \mSt = \invalid \lor \neg \validRange \lor \mSw = \sOff |] 
                                                                [T.tex|\sOff|]
             branch (conjList 
                     [ [T.tex|\neg \INIT|] 
                     , [T.tex|\mSt = \valid|] 
                     , [T.tex|\validRange |]
                     , [T.tex| \mSw = \sOn |] ]) $ do
-                cell [T.tex|\mTm < \mDl|]                      [T.tex|\sOn|]
-                cell [T.tex|\between{\mDl}{\mTm}{\mDh}|]       [T.tex|\preCHc|]
-                cell [T.tex|\mDh < \mTm|]                      [T.tex|\sOff|]
+                cellH 2 [T.tex|\mTm < \mDl|]                      [T.tex|\sOn|]
+                cellH 2 [T.tex|\between{\mDl}{\mTm}{\mDh}|]       [T.tex|\preCHc|]
+                cellH 2 [T.tex|\mDh < \mTm|]                      [T.tex|\sOff|]
 
 al_ft :: FunctionTable LaTeXLI
 al_ft = makeTable                                                 [T.tex|\cAl|] $ do

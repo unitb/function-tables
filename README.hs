@@ -18,7 +18,8 @@ main = do
         "Verification of function table specifications"
         section "TODO" $ do
             listNum $ do
-                item "Adaptive cell height based on contents"
+                item $ strike "Adaptive cell height based on contents"
+                item $ strike "Add bold, italics and strikethrough"
                 item "Color table cells based on verification results"
                 item "Add a command to automatically insert the verification results in the document"
         ""
@@ -34,7 +35,7 @@ main = do
             constant "initOk" "\\Bool"
             monitored "st" "Validity"
             table                                                [T.tex|\cMd|] $ do
-                cell [T.tex|\INIT \lor \mSw = \sOff|]            [T.tex|\off|] 
+                cellH 2 [T.tex|\INIT \lor \mSw = \sOff|]         [T.tex|\off|] 
                         -- there should be an error sOff is not the same time cMd
                 -- cell [T.tex|\neg \INIT \land \neg \mSw = \sOff|] [T.tex|\off|]
                 branch (conjList 
@@ -61,7 +62,7 @@ main = do
                 constant "initOk" "\\Bool"
                 monitored "st" "Validity"
                 table                                                  [T.tex|\cMd| ] $ do
-                    cell [T.tex|\INIT \lor \mSw = \sOff| ]             [T.tex|\off| ] 
+                    cellH 2 [T.tex|\INIT \lor \mSw = \sOff| ]          [T.tex|\off| ] 
                     branch (conjList 
                             [ [T.tex|\neg \INIT| ]
                             , [T.tex|\neg \mSw = \sOff| ] ]) $ do

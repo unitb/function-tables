@@ -27,6 +27,9 @@ data Content =
         | Enum [Content]
         | Image Content URI
         | Link  Content URI
+        | Bold [Content]
+        | Italics [Content]
+        | StrikeThrough [Content]
         | Seq Content Content
         | Nil
         | Verbatim (Maybe String) String
@@ -109,6 +112,20 @@ link (ContentWriter cmd) lnk = do
         emitContent $ Link (mconcat is) lnk
         return x
 
+nest :: ([Content] -> Content)
+     -> ContentWriter a
+     -> ContentWriter a
+nest f (ContentWriter cmd) = ContentWriter $ censor (pure . f) cmd
+
+strike :: ContentWriter a -> ContentWriter a
+strike = nest StrikeThrough
+
+bold :: ContentWriter a -> ContentWriter a
+bold = nest Bold
+
+italics :: ContentWriter a -> ContentWriter a
+italics = nest Italics
+
 trimLines :: String -> String
 trimLines xs 
         | Just n' <- n = xs & traverseLines %~ drop n'
@@ -136,3 +153,4 @@ syntax = QuasiQuoter
      , quoteDec  = undefined 
      , quoteType = undefined 
      , quotePat  = undefined }
+

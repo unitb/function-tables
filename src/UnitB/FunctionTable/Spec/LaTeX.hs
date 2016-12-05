@@ -11,6 +11,7 @@ import Data.Text hiding (toUpper)
 
 import Text.LaTeX as T hiding (tex,(&))
 import Text.LaTeX.Base.Class hiding (fromLaTeX)
+import Text.LaTeX.Base.Syntax
 import Text.LaTeX.Packages.Graphicx
 import Text.LaTeX.Packages.Hyperref
 
@@ -24,6 +25,7 @@ specToTeX s =
  <> usepackage [] "amsmath"
  <> usepackage [] "amssymb"
  <> usepackage [] "hyperref"
+ <> usepackage ["normalem"] "ulem"
  <> usepackage [] graphicx
  -- <> title "A short message"
  -- <> author "John Short"
@@ -72,11 +74,17 @@ renewcommand c n txt = commS "renewcommand"
 arg :: LaTeXC t => Int -> t 
 arg n = raw $ "#" <> pack (show n)
 
+sout :: LaTeXC l => l -> l
+sout = liftL $ \l -> TeXComm "sout" [FixArg l]
+
 instance DocFormat LaTeX where
     renderDoc (Ct t) = contentToTeX t
         where
             contentToTeX (Line ln) = fromString ln
             contentToTeX (Verbatim _ ln) = T.verbatim $ pack ln
+            contentToTeX (Bold ln) = textbf $ foldMap contentToTeX ln
+            contentToTeX (Italics ln) = emph $ foldMap contentToTeX ln
+            contentToTeX (StrikeThrough ln) = sout $ foldMap contentToTeX ln
             contentToTeX (Item ls) = itemize $ mconcat $ (item Nothing <>) . contentToTeX <$> ls
             contentToTeX (Enum ls) = enumerate $ mconcat $ (item Nothing <>) . contentToTeX <$> ls
             -- contentToTeX (Image _tag path) = includegraphics [] path

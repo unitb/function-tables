@@ -72,6 +72,15 @@ instance DocFormat Markdown where
         where
             contentToMD (Line "") = [("","")]
             contentToMD (Line ln) = L.map (((,) "") . pack) $ L.lines ln
+            contentToMD (Bold ct) = concatMap contentToMD ct &~ do
+                                        _head._2 %= ("**" <>)
+                                        _last._2 %= (<> "**")
+            contentToMD (Italics ct) = concatMap contentToMD ct &~ do
+                                        _head._2 %= ("_" <>)
+                                        _last._2 %= (<> "_")
+            contentToMD (StrikeThrough ct) = concatMap contentToMD ct &~ do
+                                        _head._2 %= ("~~" <>)
+                                        _last._2 %= (<> "~~")
             contentToMD (Item ls) = concat $ L.map (indentWith " * " "   " . contentToMD) ls
             contentToMD (Enum ls) = concat $ L.zipWith (\n -> indentWith' n . contentToMD) [1..] ls
                 where

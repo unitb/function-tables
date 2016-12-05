@@ -108,10 +108,7 @@ checkTable :: ParserSetting
            -> IO (Either [Error] (Map Label Validity))
 checkTable p thys ss defs t = runEitherT $ do
     let p' = p &~ do
-                -- decls %= 
                 sorts %= M.union ss
-                -- s <- use sorts
-                -- traceM $ pretty s
     t' <- hoistEither $ parseTable 
             (p' & decls %~ M.union (M.mapMaybe defAsVar defs)) 
             t
@@ -133,25 +130,25 @@ functionTablePO' t = do
     imapMOf_ isubtables subtablePO t
 
 disjointness :: TableCells Expr -> POGen ()
-disjointness (Cell _) = return ()
+disjointness (Cell _ _) = return ()
 disjointness (Condition _ xs) = sequence_ $ do
         (i,(y,_),ys) <- L.zip3 [0..] (N.toList xs) $ N.tail $ N.tails (N.zip (0:|[1..]) xs)
         (j,(z,_))      <- ys
         [emit_goal [label $ [s|disjointness-%d-%d|] i j] $ znot y `zor` znot z]
 
 completeness :: TableCells Expr -> POGen ()
-completeness (Cell _) = return ()
+completeness (Cell _ _) = return ()
 completeness (Condition _ xs) = emit_goal [label "completeness"] $ zsome $ fst <$> xs
 
 wellDefinedness :: TableCells Expr -> POGen ()
-wellDefinedness (Cell p) = -- trace ([s|+ %s\n  %?|] (pretty wd) wd) $ 
+wellDefinedness (Cell _ p) = 
                            emit_goal [label "WD"] wd
     where
         wd = well_definedness p
 wellDefinedness (Condition _ xs) = imapM_ (lmap fst.emitWD) xs
 
 emitWD :: Int -> Expr -> POGen ()
-emitWD i e = -- trace ([s|- %s\n  %?|] (pretty wd) wd) $ 
+emitWD i e = 
              emit_goal [label $ [s|WD/%d|] i] wd
     where
         wd = well_definedness e

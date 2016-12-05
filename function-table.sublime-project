@@ -29,13 +29,13 @@
     [
         {
           "name": "build",
-          "cmd": ["stack", "build", "--ghc-options", "-W"],
+          "cmd": ["stack", "build", "--ghc-options", "-Wall -Werror -threaded"],
           "file_regex": "^ {0,4}([^\\s=:\\(\\)][^\\n:\\(\\)]+?hs):([0-9]*):?([0-9]*)",
           "selector": "source.haskell"
         },
         {
           "name": "run",
-          "cmd": ["stack", "build", "--ghc-options", "-W -threaded"
+          "cmd": ["stack", "build", "--ghc-options", "-Wall -Werror -threaded"
               , "--exec", "logic-function-tables-exe"
               , "--test","--no-run-tests"],
           "file_regex": "^ {0,4}([^\\s=:\\(\\)][^\\n:\\(\\)]+?hs):([0-9]*):?([0-9]*)",
