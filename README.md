@@ -10,9 +10,10 @@ Verification of function table specifications
  1. ~~Adaptive cell height based on contents~~
  2. ~~Add bold, italics and strikethrough~~
  3. ~~Make UnitB.FunctionTable the one-stop module for all the eDSL~~
- 4. Add support for held-for
- 5. Color table cells based on verification results
- 6. Add a command to automatically insert the verification results in the document
+ 4. improve the parsing of expressions when arrays are provided: \array{r{}@l}
+ 5. Add a command to automatically insert the verification results in the document
+ 6. Add support for held-for
+ 7. Color table cells based on verification results
 
 
 ## Example
@@ -27,27 +28,29 @@ The following table:
 is specified by the following Haskell code (in README.hs):
 
 ```haskell
-enumSort "Status" [("sOff","off"),("sOn","on")]
-enumSort' "Mode"   ["off","normal","init","fail"]
-enumSort' "Validity" ["valid","invalid"]
-constant "INIT" "\\Bool"
-controlled "md" "Mode"
-monitored "sw" "Status"
-constant "initOk" "\\Bool"
-monitored "st" "Validity"
-table                                            [tex|\cMd| ] $ do
-  cellH 2 [tex|\INIT \lor \mSw = \sOff| ]        [tex|\off| ] 
-  branch (conjList 
-      [ [tex|\neg \INIT| ]
-      , [tex|\neg \mSw = \sOff| ] ]) $ do
-    cell [tex|\preCMd = \off| ]                  [tex|\init| ]
-    branch [tex|\preCMd = \init| ] $ do
-      cell [tex|\neg \initOk| ]                  [tex|\init| ]
-      cell [tex|\initOk| ]                       [tex|\normal| ]
-    branch [tex|\preCMd \in \{\normal,\fail\} | ] $ do
-      cell [tex|\mSt = \valid| ]                 [tex|\normal| ]
-      cell [tex|\mSt = \invalid \lor \preCMd = \fail| ]             
-                                                 [tex|\fail| ] 
+do enumSort "Status" [("sOff","off"),("sOn","on")]
+   enumSort' "Mode"   ["off","normal","init","fail"]
+   enumSort' "Validity" ["valid","invalid"]
+   constant "INIT" "\\Bool"
+   controlled "md" "Mode"
+   monitored "sw" "Status"
+   constant "initOk" "\\Bool"
+   monitored "st" "Validity"
+   table                                               (raw "\\cMd") $ do
+     cellH 2 (raw "\\INIT \\lor \\mSw = \\sOff")       (raw "\\off") 
+         -- there should be an error sOff is not the same time cMd
+     -- cell (raw "\\neg \\INIT \\land \\neg \\mSw = \\sOff") (raw "\\off")
+     branch (conjList 
+         [ (raw "\\neg \\INIT")
+         , (raw "\\neg \\mSw = \\sOff") ]) $ do
+       cell (raw "\\preCMd = \\off")                   (raw "\\init")
+       branch (raw "\\preCMd = \\init") $ do
+         cell (raw "\\neg \\initOk")                   (raw "\\init")
+         cell (raw "\\initOk")                         (raw "\\normal")
+       branch (raw "\\preCMd \\in \\{\\normal,\\fail\\} ") $ do
+         cell (raw "\\mSt = \\valid")                  (raw "\\normal")
+         cell (raw "\\mSt = \\invalid \\lor \\preCMd = \\fail")             
+                                                       (raw "\\fail") 
 ```
 
 The verification results can be obtained by replacing

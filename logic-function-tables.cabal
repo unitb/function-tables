@@ -33,10 +33,12 @@ library
                      , filepath
                      , generic-instances
                      , HaTeX >= 3.17
+                     , haskell-src-meta
                      , literate-unitb-logic
                      , latex-function-tables
                      , lens
                      , lens-extra
+                     , MissingH
                      , mtl
                      , pipes
                      , process

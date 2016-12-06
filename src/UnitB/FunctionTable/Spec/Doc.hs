@@ -3,14 +3,17 @@ module UnitB.FunctionTable.Spec.Doc where
 
 import Control.Lens
 import Control.Monad.Writer
+import Data.Bitraversable
 import Data.Char
 import Data.List.Lens
 import Data.String hiding (lines)
 import Data.String.Lines
+import Data.String.Utils
 
 import Prelude hiding (lines)
 
 import GHC.Generics (Generic)
+import Language.Haskell.Meta.Parse
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 
@@ -150,6 +153,36 @@ quoteSyntax xs
 syntax :: QuasiQuoter 
 syntax = QuasiQuoter
      { quoteExp  = quoteSyntax
+     , quoteDec  = undefined 
+     , quoteType = undefined 
+     , quotePat  = undefined }
+
+mkQuoted :: String -> ExpQ
+mkQuoted str = case parseExp str' of
+           Left msg -> fail $ "Could not parse expression. " ++ msg
+           Right exp -> [e|
+                ( $(pure exp) 
+                , emitContent (Verbatim (Just "haskell") $(stringE $ trimLines str'))) |] 
+    where
+        str' = replace "\\]" "|]" str
+
+quoted :: QuasiQuoter
+quoted = QuasiQuoter
+     { quoteExp  = \str -> [e| bitraverse id id $(mkQuoted str) |]
+     , quoteDec  = undefined 
+     , quoteType = undefined 
+     , quotePat  = undefined }
+
+listing :: QuasiQuoter
+listing = QuasiQuoter
+     { quoteExp  = \str -> [e| fst <$> bitraverse return id $(mkQuoted str) |]
+     , quoteDec  = undefined 
+     , quoteType = undefined 
+     , quotePat  = undefined }
+
+exec :: QuasiQuoter
+exec = QuasiQuoter
+     { quoteExp  = \str -> [e| snd <$> bitraverse id return $(mkQuoted str) |]
      , quoteDec  = undefined 
      , quoteType = undefined 
      , quotePat  = undefined }

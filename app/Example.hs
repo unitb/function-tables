@@ -66,8 +66,14 @@ isolette = do
             includeTableAsm md_ft
             "This is text" 
             "what do you mean?"
+            let y = "bar"
+            [quoted| 
             paragraph $ do
+                let x = "foo"
                 "This is more text"
+                x
+                y
                 "What???"
-                "MORE TEXT!!!"
+                "MORE TEXT!!!" |]
+            y
             mapM_ includeTable [hc_ft,al_ft]
