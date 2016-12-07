@@ -26,7 +26,7 @@ packages:
 # - https://example.com/foo/bar/baz-0.0.2.tar.gz
 - location:
    git: https://github.com/unitb/literate-unitb-logic
-   commit: fc4222b7a59d73f30617b7f84fb353d52f375536
+   commit: 0888bf907d3826f8861f5618778524bb5496c556
 - location:
    git: https://github.com/unitb/latex-function-tables
    commit: f0609cda6a321bfef65c247c120bafc9988148de

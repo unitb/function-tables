@@ -10,10 +10,11 @@ Verification of function table specifications
  1. ~~Adaptive cell height based on contents~~
  2. ~~Add bold, italics and strikethrough~~
  3. ~~Make UnitB.FunctionTable the one-stop module for all the eDSL~~
- 4. improve the parsing of expressions when arrays are provided: \array{r{}@l}
- 5. Add a command to automatically insert the verification results in the document
- 6. Add support for held-for
- 7. Color table cells based on verification results
+ 4. ~~improve the parsing of expressions when arrays are provided: \array{r{}@l}~~
+ 5. add support for quasi quoters in literate code
+ 6. Add a command to automatically insert the verification results in the document
+ 7. Add support for held-for
+ 8. Color table cells based on verification results
 
 
 ## Example
@@ -38,8 +39,6 @@ do enumSort "Status" [("sOff","off"),("sOn","on")]
    monitored "st" "Validity"
    table                                               (raw "\\cMd") $ do
      cellH 2 (raw "\\INIT \\lor \\mSw = \\sOff")       (raw "\\off") 
-         -- there should be an error sOff is not the same time cMd
-     -- cell (raw "\\neg \\INIT \\land \\neg \\mSw = \\sOff") (raw "\\off")
      branch (conjList 
          [ (raw "\\neg \\INIT")
          , (raw "\\neg \\mSw = \\sOff") ]) $ do

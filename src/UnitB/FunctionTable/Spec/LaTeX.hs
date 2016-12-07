@@ -23,6 +23,7 @@ specToTeX s =
     documentclass [] article
  <> usepackage [] "multirow"
  <> usepackage [] "amsmath"
+ <> usepackage [] "array"
  <> usepackage [] "amssymb"
  <> usepackage [] "hyperref"
  <> usepackage ["normalem"] "ulem"

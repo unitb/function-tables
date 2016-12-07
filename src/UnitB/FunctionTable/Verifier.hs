@@ -153,7 +153,13 @@ emitWD i e =
     where
         wd = well_definedness e
 
+opList :: (LaTeXC t) => String -> [t] -> t
+opList _ [] = mempty
+opList op (x:xs) = T.array Nothing [RightColumn,Separator (raw $ pack "~"),LeftColumn] $ 
+        mconcat $ L.intersperse lnbk $ (mempty T.& x) : L.map (raw (pack op) T.&) xs
+
 conjList :: (LaTeXC t) => [t] -> t
-conjList [] = mempty
-conjList (x:xs) = T.array Nothing [RightColumn,LeftColumn] $ 
-        mconcat $ L.intersperse lnbk $ (mempty T.& x) : L.map (raw (pack "\\land") T.&) xs
+conjList = opList "\\land"
+
+disjList :: (LaTeXC t) => [t] -> t
+disjList = opList "\\lor"
