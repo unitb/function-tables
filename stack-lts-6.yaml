@@ -122,10 +122,14 @@ extra-deps:
 
 - sized-vector-1.4.3.1
 - equational-reasoning-0.4.1.1
+- singletons-2.1
+- th-desugar-1.6
+# # - equational-reasoning-0.2.0.5
 - monomorphic-0.0.3.3
 - type-natural-0.4.1.1
+# # # - type-natural-0.2.3.2
 - ghc-typelits-presburger-0.1.1.0
-- ghc-typelits-natnormalise-0.4.6
+# # - ghc-typelits-natnormalise-0.4.6
 
 # Override default flag values for local packages and extra-deps
 flags: {}
