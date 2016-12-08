@@ -29,13 +29,13 @@
     [
         {
           "name": "build",
-          "cmd": ["stack", "build", "--ghc-options", "-Wall -Werror -threaded"],
+          "cmd": ["stack", "build", "--ghc-options", "-Wall  -fno-warn-type-defaults -fno-warn-name-shadowing -Werror -threaded"],
           "file_regex": "^ {0,4}([^\\s=:\\(\\)][^\\n:\\(\\)]+?hs):([0-9]*):?([0-9]*)",
           "selector": "source.haskell"
         },
         {
           "name": "run",
-          "cmd": ["stack", "build", "--ghc-options", "-Wall -Werror -threaded"
+          "cmd": ["stack", "build", "--ghc-options", "-Wall  -fno-warn-type-defaults -fno-warn-name-shadowing -Werror -threaded"
               , "--exec", "logic-function-tables-exe"
               , "--test","--no-run-tests"],
           "file_regex": "^ {0,4}([^\\s=:\\(\\)][^\\n:\\(\\)]+?hs):([0-9]*):?([0-9]*)",
@@ -49,6 +49,19 @@
             "name": "Check test results",
             "working_dir": "${project_path}"
         },{
+            "name": "lts-3",
+            "cmd": [ "stack", "build"
+                   , "--ghc-options", "-Wall -fno-warn-type-defaults -fno-warn-name-shadowing"
+                   , "--test", "--no-run-tests"
+                   , "--resolver","lts-3" 
+                   , "--stack-yaml", "$project_path/stack-lts-3.yaml" ],
+        },{
+            "name": "lts-3 - test",
+            "cmd": [ "stack", "test"
+                   , "--ghc-options", "-Wall -fno-warn-type-defaults -fno-warn-name-shadowing"
+                   , "--resolver","lts-3" 
+                   , "--stack-yaml", "$project_path/stack-lts-3.yaml" ],
+        },{
             "name": "nightly",
             "cmd": [ "stack", "build"
                    , "--ghc-options", "-Wall -fno-warn-type-defaults -fno-warn-name-shadowing"
@@ -59,7 +72,6 @@
             "name": "nightly - test",
             "cmd": [ "stack", "test"
                    , "--ghc-options", "-Wall -fno-warn-type-defaults -fno-warn-name-shadowing"
-                   , "--test", "--no-run-tests"
                    , "--resolver","nightly" 
                    , "--stack-yaml", "$project_path/stack-nightly.yaml" ],
         }

@@ -41,7 +41,7 @@ packages:
     commit: 78529049b88999df3eb76340db166d9892d46bfd
 - location:
     git: https://github.com/unitb/tex2png-hs.git
-    commit: 9859bec9c95a111f0151a3b659e9e5707f565d09
+    commit: 234db307ab956ddde3ad75049452884cfd415091
 - location:
     git: https://github.com/unitb/bipartite-graph.git
     commit: 0e430c7a0571b31d980bf4141197ec6c19b964b6
@@ -96,7 +96,7 @@ packages:
 # (e.g., acme-missiles-0.3)
 extra-deps: 
 - axiomatic-classes-0.1.0.0
-- latex-function-tables-0.1.0.0
+# - latex-function-tables-0.1.0.0
 - control-invariants-0.1.0.0
 # - existential-0.2.0.0
 - pseudomacros-0.0.2
@@ -106,7 +106,7 @@ extra-deps:
 - serialize-instances-0.1.0.0
 - portable-lines-0.1
 - th-printf-0.3.1
-- primitive-0.6.1.0
+# - primitive-0.6.1.0
 - zlib-0.6.1.1
 
 - HaTeX-3.17.0.2
@@ -116,13 +116,18 @@ extra-deps:
 - semigroupoids-5.0.1
 - shelly-1.6.8.1
 - vector-0.11.0.0
-- lens-4.14
-- sized-vector-1.4.3.1
-- equational-reasoning-0.4.1.1
+- cereal-text-0.1.0.2
+- cryptohash-sha256-0.11.100.1
+- optparse-text-0.1.1.0
+
+- sized-vector-1.4.3.0
+# - equational-reasoning-0.4.1.1
+- equational-reasoning-0.2.0.5
 - monomorphic-0.0.3.3
-- type-natural-0.4.1.1
-- ghc-typelits-presburger-0.1.1.0
-- ghc-typelits-natnormalise-0.4.6
+# - type-natural-0.4.1.1
+- type-natural-0.2.3.2
+# - ghc-typelits-presburger-0.1.1.0
+# - ghc-typelits-natnormalise-0.4.6
 
 # Override default flag values for local packages and extra-deps
 flags: {}

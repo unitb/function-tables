@@ -23,7 +23,7 @@ suite = test_cases
             , aCase "LaTeX rendering" case1 result1 ]
 
 case0 :: IO String
-case0 = fmap L.unlines . P.toListM $ verifySpec' DoNotRender isolette
+case0 = fmap L.unlines . P.toListM $ verifySpec' doNotRender isolette
 
 result0 :: String
 result0 = L.unlines
@@ -64,11 +64,11 @@ result0 = L.unlines
             ]
 
 case1 :: IO Text
-case1 = return $ renderSpecTeX isolette
+case1 = return $ renderSpecTeX $ isolette >> verificationResult
 
 result1 :: Text
 result1 = T.intercalate "\n"
-    [ "\\documentclass{article}\\usepackage{multirow}\\usepackage{amsmath}\\usepackage{array}\\usepackage{amssymb}\\usepackage{hyperref}\\usepackage[normalem]{ulem}\\usepackage{graphicx}\\newcommand{\\dom}{\\textsf{dom}}\\renewcommand{\\between}[3]{#1 \\le #2 \\le #3}\\newcommand{\\sOff}{\\textit{off}}\\newcommand{\\sOn}{\\textit{on}}\\newcommand{\\off}{\\textit{off}}\\newcommand{\\normal}{\\textit{normal}}\\newcommand{\\init}{\\textit{init}}\\newcommand{\\fail}{\\textit{fail}}\\newcommand{\\valid}{\\textit{valid}}\\newcommand{\\invalid}{\\textit{invalid}}\\newcommand{\\INIT}{\\textsf{INIT}}\\newcommand{\\initOk}{\\textsf{initOk}}\\newcommand{\\problem}{\\textsf{problem}}\\newcommand{\\hysteresis}{\\textsf{hysteresis}}\\newcommand{\\heldfor}{\\textsf{heldfor}}\\newcommand{\\validRange}{validRange}\\newcommand{\\cMd}{\\textsf{c\\_{}md}}\\newcommand{\\preCMd}{{\\textsf{c\\_{}md}}_{-1}}\\newcommand{\\cHc}{\\textsf{c\\_{}hc}}\\newcommand{\\preCHc}{{\\textsf{c\\_{}hc}}_{-1}}\\newcommand{\\cAl}{\\textsf{c\\_{}al}}\\newcommand{\\preCAl}{{\\textsf{c\\_{}al}}_{-1}}\\newcommand{\\mSw}{\\textsf{m\\_{}sw}}\\newcommand{\\preMSw}{{\\textsf{m\\_{}sw}}_{-1}}\\newcommand{\\mSt}{\\textsf{m\\_{}st}}\\newcommand{\\preMSt}{{\\textsf{m\\_{}st}}_{-1}}\\newcommand{\\mTm}{\\textsf{m\\_{}tm}}\\newcommand{\\preMTm}{{\\textsf{m\\_{}tm}}_{-1}}\\newcommand{\\mDl}{\\textsf{m\\_{}dl}}\\newcommand{\\preMDl}{{\\textsf{m\\_{}dl}}_{-1}}\\newcommand{\\mDh}{\\textsf{m\\_{}dh}}\\newcommand{\\preMDh}{{\\textsf{m\\_{}dh}}_{-1}}\\newcommand{\\mAl}{\\textsf{m\\_{}al}}\\newcommand{\\preMAl}{{\\textsf{m\\_{}al}}_{-1}}\\newcommand{\\mAh}{\\textsf{m\\_{}ah}}\\newcommand{\\preMAh}{{\\textsf{m\\_{}ah}}_{-1}}\\begin{document}"
+    [ "\\documentclass{article}\\usepackage{multirow}\\usepackage{amsmath}\\usepackage{array}\\usepackage{amssymb}\\usepackage{hyperref}\\usepackage[normalem]{ulem}\\usepackage{graphicx}\\usepackage[table]{xcolor}\\newcommand{\\dom}{\\textsf{dom}}\\renewcommand{\\between}[3]{#1 \\le #2 \\le #3}\\newcommand{\\sOff}{\\textit{off}}\\newcommand{\\sOn}{\\textit{on}}\\newcommand{\\off}{\\textit{off}}\\newcommand{\\normal}{\\textit{normal}}\\newcommand{\\init}{\\textit{init}}\\newcommand{\\fail}{\\textit{fail}}\\newcommand{\\valid}{\\textit{valid}}\\newcommand{\\invalid}{\\textit{invalid}}\\newcommand{\\INIT}{\\textsf{INIT}}\\newcommand{\\initOk}{\\textsf{initOk}}\\newcommand{\\problem}{\\textsf{problem}}\\newcommand{\\hysteresis}{\\textsf{hysteresis}}\\newcommand{\\heldfor}{\\textsf{heldfor}}\\newcommand{\\validRange}{validRange}\\newcommand{\\cMd}{\\textsf{c\\_{}md}}\\newcommand{\\preCMd}{{\\textsf{c\\_{}md}}_{-1}}\\newcommand{\\cHc}{\\textsf{c\\_{}hc}}\\newcommand{\\preCHc}{{\\textsf{c\\_{}hc}}_{-1}}\\newcommand{\\cAl}{\\textsf{c\\_{}al}}\\newcommand{\\preCAl}{{\\textsf{c\\_{}al}}_{-1}}\\newcommand{\\mSw}{\\textsf{m\\_{}sw}}\\newcommand{\\preMSw}{{\\textsf{m\\_{}sw}}_{-1}}\\newcommand{\\mSt}{\\textsf{m\\_{}st}}\\newcommand{\\preMSt}{{\\textsf{m\\_{}st}}_{-1}}\\newcommand{\\mTm}{\\textsf{m\\_{}tm}}\\newcommand{\\preMTm}{{\\textsf{m\\_{}tm}}_{-1}}\\newcommand{\\mDl}{\\textsf{m\\_{}dl}}\\newcommand{\\preMDl}{{\\textsf{m\\_{}dl}}_{-1}}\\newcommand{\\mDh}{\\textsf{m\\_{}dh}}\\newcommand{\\preMDh}{{\\textsf{m\\_{}dh}}_{-1}}\\newcommand{\\mAl}{\\textsf{m\\_{}al}}\\newcommand{\\preMAl}{{\\textsf{m\\_{}al}}_{-1}}\\newcommand{\\mAh}{\\textsf{m\\_{}ah}}\\newcommand{\\preMAh}{{\\textsf{m\\_{}ah}}_{-1}}\\begin{document}"
     , ""
     , ""
     , "\\begin{tabular}{|l|l|l||c||}\\hline \\multicolumn{3}{|l||}{}&\\multicolumn{1}{|l|}{$\\cMd$}\\\\\\cline{1-4}\\hline \\hline \\multicolumn{3}{|l||}{$\\INIT \\lor \\mSw = \\sOff$}&\\multicolumn{1}{|l|}{$\\off$}\\\\\\cline{1-4}\\multicolumn{1}{|l|}{\\multirow{5}{*}{$\\begin{array}{r@{~}l}&\\neg \\INIT\\\\\\land&\\neg \\mSw = \\sOff\\end{array}$}}&\\multicolumn{2}{|l||}{$\\preCMd = \\off$}&\\multicolumn{1}{|l|}{$\\init$}\\\\\\cline{2-4}\\multicolumn{1}{|l|}{}&\\multicolumn{1}{|l|}{\\multirow{2}{*}{$\\preCMd = \\init$}}&\\multicolumn{1}{|l||}{$\\neg \\initOk$}&\\multicolumn{1}{|l|}{$\\init$}\\\\\\cline{3-4}\\multicolumn{1}{|l|}{}&\\multicolumn{1}{|l|}{}&\\multicolumn{1}{|l||}{$\\initOk$}&\\multicolumn{1}{|l|}{$\\normal$}\\\\\\cline{2-4}\\multicolumn{1}{|l|}{}&\\multicolumn{1}{|l|}{\\multirow{2}{*}{$\\preCMd \\in \\{\\normal,\\fail\\} $}}&\\multicolumn{1}{|l||}{$\\mSt = \\valid$}&\\multicolumn{1}{|l|}{$\\normal$}\\\\\\cline{3-4}\\multicolumn{1}{|l|}{}&\\multicolumn{1}{|l|}{}&\\multicolumn{1}{|l||}{$\\mSt = \\invalid$}&\\multicolumn{1}{|l|}{$\\fail$}\\\\\\cline{1-4}\\end{tabular}"
@@ -107,7 +107,8 @@ result1 = T.intercalate "\n"
     , "\\begin{tabular}{|l|l|l||c||}\\hline \\multicolumn{3}{|l||}{}&\\multicolumn{1}{|l|}{$\\cAl$}\\\\\\cline{1-4}\\hline \\hline \\multicolumn{3}{|l||}{$\\cMd \\in \\{ \\off, \\init \\} $}&\\multicolumn{1}{|l|}{$\\sOff$}\\\\\\cline{1-4}\\multicolumn{1}{|l|}{\\multirow{3}{*}{$\\cMd \\in \\{ \\normal, \\fail \\} $}}&\\multicolumn{2}{|l||}{$\\problem$}&\\multicolumn{1}{|l|}{$\\sOn$}\\\\\\cline{2-4}\\multicolumn{1}{|l|}{}&\\multicolumn{1}{|l|}{\\multirow{2}{*}{$\\neg \\problem$}}&\\multicolumn{1}{|l||}{$\\neg \\heldfor \\lor \\hysteresis$}&\\multicolumn{1}{|l|}{$\\preCAl$}\\\\\\cline{3-4}\\multicolumn{1}{|l|}{}&\\multicolumn{1}{|l|}{}&\\multicolumn{1}{|l||}{$\\heldfor \\land \\neg \\hysteresis$}&\\multicolumn{1}{|l|}{$\\sOff$}\\\\\\cline{1-4}\\end{tabular}"
     , ""
     , ""
-    , "\\end{document}"
+    , ""
+    , "\\emph{verification results not available}\\end{document}"
     ]
 
 main :: IO ()

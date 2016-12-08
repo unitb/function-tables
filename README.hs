@@ -19,8 +19,9 @@ main = do
         item $ strike "Add bold, italics and strikethrough"
         item $ strike "Make UnitB.FunctionTable the one-stop module for all the eDSL"
         item $ strike "improve the parsing of expressions when arrays are provided: \\array{r{}@l}"
-        item "add support for quasi quoters in literate code"
         item "Add a command to automatically insert the verification results in the document"
+        item "add support for quasi quoters in literate code"
+        item "prove invariants"
         item "Add support for held-for"
         item "Color table cells based on verification results"
     ""
@@ -80,6 +81,7 @@ main = do
       "`renderSpecMDFile \"README.md\"` with `verifySpec`. The above table"
       "produces the following results:"
       ""
+      verificationResult
       [verbatim|
         \cMd
         (1/1/completeness,Valid)

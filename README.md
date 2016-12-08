@@ -11,10 +11,11 @@ Verification of function table specifications
  2. ~~Add bold, italics and strikethrough~~
  3. ~~Make UnitB.FunctionTable the one-stop module for all the eDSL~~
  4. ~~improve the parsing of expressions when arrays are provided: \array{r{}@l}~~
- 5. add support for quasi quoters in literate code
- 6. Add a command to automatically insert the verification results in the document
- 7. Add support for held-for
- 8. Color table cells based on verification results
+ 5. Add a command to automatically insert the verification results in the document
+ 6. add support for quasi quoters in literate code
+ 7. prove invariants
+ 8. Add support for held-for
+ 9. Color table cells based on verification results
 
 
 ## Example
@@ -56,25 +57,7 @@ The verification results can be obtained by replacing
 `renderSpecMDFile "README.md"` with `verifySpec`. The above table
 produces the following results:
 
-```
-\cMd
-(1/1/completeness,Valid)
-(1/1/disjointness-0-1,Valid)
-(1/2/WD/1,Valid)
-(1/2/completeness,Valid)
-(1/2/disjointness-0-1,ValUnknown)
-(1/WD/0,Valid)
-(1/WD/1,Valid)
-(1/WD/2,Valid)
-(1/completeness,Valid)
-(1/disjointness-0-1,Valid)
-(1/disjointness-0-2,Valid)
-(1/disjointness-1-2,Valid)
-(completeness,Valid)
-(disjointness-0-1,Valid)
-Success: 13 / 14 
-Total: 13 / 14  
-```
+_verification results not available_
 
 We inserted a disjointness problem on purpose and Z3 found it
 easily.

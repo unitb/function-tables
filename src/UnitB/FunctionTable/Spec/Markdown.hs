@@ -23,13 +23,13 @@ import UnitB.FunctionTable.Spec.Types
 newtype Markdown = Markdown { unMD :: Text }
     deriving (Eq,Ord,Monoid,IsString)
 
-specToMD :: TeXSpec -> IO Markdown
+specToMD :: TeXSpec () -> IO Markdown
 specToMD sys = runDocT $ do
         cd <- liftIO getCurrentDirectory
-        forM_ (zip [0..] $ contents $ sys^.specs) $ \(i,ln) -> do
+        forM_ (zip [0..] $ sys^.specs.contents) $ \(i,ln) -> do
             case ln of
                 Left  str   -> do
-                    tell [str]
+                    tell $ str ()
                     -- return Nothing
                 Right (_b,tbl) -> do
                     r <- lift $ tableImage ([s|table%d|] i) ps def tbl
@@ -91,6 +91,11 @@ instance DocFormat Markdown where
             contentToMD (Link tag fn)  = between "[" " " (contentToMD tag) (pack $ [s|](%s)|] fn)
             contentToMD (Seq x y)  = contentToMD x <> contentToMD y
             contentToMD Nil  = mempty
+            contentToMD (DocTable t) = mkRow (heading t) : sep : L.map mkRow (rows t)
+                where
+                    cell (FormatCell _ xs) = xs
+                    sep = ("",pack $ intercalate " | " $ L.replicate (columns t) "---")
+                    mkRow xs = ("",pack $ "| " ++ intercalate " | " (L.map cell xs) ++ " |")
             contentToMD (Verbatim lang xs) = L.map (((,) "") . pack) $ ["```" ++ lang'] ++ L.lines xs ++ ["```"]
                 where
                     lang' = maybe "" id lang

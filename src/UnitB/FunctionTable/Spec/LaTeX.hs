@@ -9,16 +9,19 @@ import Control.Precondition
 import Data.List as L
 import Data.Text hiding (toUpper)
 
-import Text.LaTeX as T hiding (tex,(&))
+import           Text.LaTeX as T hiding (tex,(&))
+import qualified Text.LaTeX as T 
 import Text.LaTeX.Base.Class hiding (fromLaTeX)
 import Text.LaTeX.Base.Syntax
-import Text.LaTeX.Packages.Graphicx
-import Text.LaTeX.Packages.Hyperref
+
+import qualified Text.LaTeX.Packages.Color as T
+import           Text.LaTeX.Packages.Graphicx
+import           Text.LaTeX.Packages.Hyperref
 
 import UnitB.FunctionTable.Spec.Doc hiding (item,paragraph)
 import UnitB.FunctionTable.Spec.Types as T
 
-specToTeX :: TeXSpec -> LaTeX
+specToTeX :: TeXSpec () -> LaTeX
 specToTeX s = 
     documentclass [] article
  <> usepackage [] "multirow"
@@ -28,16 +31,14 @@ specToTeX s =
  <> usepackage [] "hyperref"
  <> usepackage ["normalem"] "ulem"
  <> usepackage [] graphicx
- -- <> title "A short message"
- -- <> author "John Short"
- -- <> author "John Short"
+ <> usepackage ["table"] "xcolor"
  -- <> comm1 "newcommand" (raw "\\dom") <> braces (textsf "dom")
  <> mathComm' "dom"
  <> renewcommand "between" 3 (raw "#1 \\le #2 \\le #3")
  -- <> renewcommand "between" 3 (raw "#1 \\1\\le #2 \\1\\le #3")
  <> s^.newCommands
  <> document (mconcat $ L.intersperse "\n" 
-        $ either renderDoc (rendertex.snd) <$> contents (s^.specs))
+        $ either (foldMap renderDoc . ($ ())) (rendertex.snd) <$> s^.specs.contents)
 
 
 
@@ -78,6 +79,9 @@ arg n = raw $ "#" <> pack (show n)
 sout :: LaTeXC l => l -> l
 sout = liftL $ \l -> TeXComm "sout" [FixArg l]
 
+cellcolor :: (Render c) => c -> LaTeX
+cellcolor c = TeXComm "cellcolor" [FixArg $ rendertex c]
+
 instance DocFormat LaTeX where
     renderDoc (Ct t) = contentToTeX t
         where
@@ -91,6 +95,18 @@ instance DocFormat LaTeX where
             -- contentToTeX (Image _tag path) = includegraphics [] path
             contentToTeX (Image tag path) = hyperimage (createURL path) (contentToTeX tag)
             contentToTeX (Link tag path) = href [] (createURL path) (contentToTeX tag)
+            contentToTeX (DocTable t) = tabular Nothing 
+                    (L.intersperse VerticalLine $ L.replicate (columns t) LeftColumn) 
+                    $ mkRow (heading t) <> lnbk <> hline <> mconcat (L.intersperse lnbk $ L.map mkRow (rows t))
+                where
+                    toLaTeXColor Red    = T.Red
+                    toLaTeXColor Yellow = T.Yellow
+                    toLaTeXColor Green  = T.Green
+                    mkCell (FormatCell c xs) =    maybe mempty (cellcolor . toLaTeXColor) c 
+                                               <> fromString xs
+                    mkRow = mkRow' . L.map mkCell
+                    mkRow' [] = mempty
+                    mkRow' (x:xs) = L.foldl (T.&) x xs
             contentToTeX Nil = mempty
             contentToTeX (Seq x y) = contentToTeX x <> contentToTeX y
     renderDoc (Title lvl t) 

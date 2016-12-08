@@ -1,14 +1,24 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell
+        ,ExistentialQuantification
+        ,PolyKinds
+        ,DataKinds #-}
 module UnitB.FunctionTable.Spec.Doc where
 
 import Control.Lens
-import Control.Monad.Writer
+import Control.Lens.Bound
+import Control.Monad.Writer hiding (All)
 import Data.Bitraversable
 import Data.Char
+import Data.Constraint
+import Data.Existential
 import Data.List.Lens
 import Data.String hiding (lines)
 import Data.String.Lines
 import Data.String.Utils
+import Data.Vector.Sized (Vector,toList)
+-- import Data.Vector.Sized.Quote 
+import Data.Type.Natural
+import Data.Typeable
 
 import Prelude hiding (lines)
 
@@ -17,12 +27,26 @@ import Language.Haskell.Meta.Parse
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 
+newtype Table a = Tbl { _tableCell :: Cell1 (TableIntl a) All }
+    deriving (Generic)
+
+data TableIntl a n = TblIntl (Dict (SingI n,Eq a)) (Vector a n) [Vector a n]
+    deriving (Eq,Ord,Show,Generic)
+
+makeFields ''Table
+
 data Doc = 
         Title Int String
         | Ct Content
     deriving (Eq,Ord,Show,Generic)
 
 type URI = String
+
+data Color = Red | Yellow | Green
+    deriving (Eq,Ord,Show,Generic,Enum,Bounded)
+
+data FormatCell = FormatCell (Maybe Color) String
+    deriving (Eq,Ord,Show,Generic)
 
 data Content = 
         Line String 
@@ -33,10 +57,18 @@ data Content =
         | Bold [Content]
         | Italics [Content]
         | StrikeThrough [Content]
+        | DocTable (Table FormatCell)
         | Seq Content Content
         | Nil
         | Verbatim (Maybe String) String
     deriving (Eq,Ord,Show,Generic)
+
+instance (Typeable a,Eq a) => Eq (Table a) where
+    (==) = cell1Equal' (==)
+instance (Typeable a,Ord a) => Ord (Table a) where
+    compare = cell1Compare' compare
+instance Show a => Show (Table a) where
+    show = readCell1' show
 
 class Monoid out => DocFormat out where
     renderDoc :: Doc -> out
@@ -52,6 +84,8 @@ runDocT = fmap (mconcat . fmap renderDoc) . execWriterT
 
 instance IsString Doc where
     fromString = Ct . Line
+instance IsString FormatCell where
+    fromString = FormatCell Nothing
 instance IsString Content where
     fromString = Line
 instance Monoid Content where
@@ -60,6 +94,29 @@ instance Monoid Content where
     mappend x Nil = x
     mappend (Seq x y) z = Seq x $ y `mappend` z
     mappend x y = Seq x y
+
+toInt :: Dict (SingI n, Eq a) -> SNat n -> Int
+toInt _ = sNatToInt
+
+columns :: Table a -> Int
+columns = readCell1' columns'
+
+columns' :: TableIntl a n -> Int
+columns' (TblIntl d@Dict _ _) = toInt d sing
+
+heading :: Table t -> [t]
+heading (Tbl (Cell (TblIntl _ t _))) = toList t
+
+rows :: Table t -> [[t]]
+rows (Tbl (Cell (TblIntl _ _ ts))) = map toList ts
+
+makeDocTable :: (DocBuilder m,SingI n,Typeable n)
+             => Vector FormatCell n -> [Vector FormatCell n] -> m ()
+makeDocTable h ts = emitContent $ docTable h ts
+
+docTable :: (SingI n,Typeable n)
+         => Vector FormatCell n -> [Vector FormatCell n] -> Content
+docTable h ts = DocTable . makeCell1 $ TblIntl Dict h ts
 
 text :: DocBuilder m => String -> m ()
 text = emitContent . Line
@@ -91,6 +148,9 @@ instance DocBuilder ContentWriter where
 instance a ~ () => IsString (ContentWriter a) where
     fromString = ContentWriter . tell . pure . Line
 
+execContentWriter :: ContentWriter a -> [Content]
+execContentWriter (ContentWriter cmd) = execWriter cmd
+
 item :: ContentWriter a -> ListEnv a
 item (ContentWriter cmd) = do
         let (x,is) = runWriter cmd
@@ -115,18 +175,24 @@ link (ContentWriter cmd) lnk = do
         emitContent $ Link (mconcat is) lnk
         return x
 
-nest :: ([Content] -> Content)
+nest :: DocBuilder m
+     => ([Content] -> Content)
      -> ContentWriter a
-     -> ContentWriter a
-nest f (ContentWriter cmd) = ContentWriter $ censor (pure . f) cmd
+     -> m a
+nest f (ContentWriter cmd) = emitContent (f w) >> return x
+    where
+        (x,w) = runWriter cmd
 
-strike :: ContentWriter a -> ContentWriter a
+strike :: DocBuilder m
+       => ContentWriter a -> m a
 strike = nest StrikeThrough
 
-bold :: ContentWriter a -> ContentWriter a
+bold :: DocBuilder m
+     => ContentWriter a -> m a
 bold = nest Bold
 
-italics :: ContentWriter a -> ContentWriter a
+italics :: DocBuilder m
+        => ContentWriter a -> m a
 italics = nest Italics
 
 trimLines :: String -> String
@@ -168,7 +234,7 @@ mkQuoted str = case parseExp str' of
 
 quoted :: QuasiQuoter
 quoted = QuasiQuoter
-     { quoteExp  = \str -> [e| bitraverse id id $(mkQuoted str) |]
+     { quoteExp  = \str -> [e| void $ bitraverse id id $(mkQuoted str) |]
      , quoteDec  = undefined 
      , quoteType = undefined 
      , quotePat  = undefined }
