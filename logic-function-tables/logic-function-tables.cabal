@@ -1,7 +1,7 @@
 name:                logic-function-tables
 version:             0.1.0.0
 synopsis:            Initial project template from stack
-description:         Please see README.md
+description:         Please see ../README.md
 homepage:            https://github.com/githubuser/logic-function-tables#readme
 license:             BSD3
 license-file:        LICENSE
@@ -10,7 +10,7 @@ maintainer:          example@example.com
 copyright:           2016 Author name here
 category:            Logic
 build-type:          Simple
--- extra-source-files:
+extra-source-files:  ../README.md
 cabal-version:       >=1.10
 
 library
