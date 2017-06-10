@@ -16,16 +16,14 @@
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
 resolver: lts-7.24
-compiler: ghc-7.10.3
+# compiler: ghc-7.10.3
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
 # 
 packages:
-- latex-function-tables
 - logic-function-tables
-# - some-directory
-# - https://example.com/foo/bar/baz-0.0.2.tar.gz
+- latex-function-tables
 - location:
    git: https://github.com/unitb/literate-unitb-complete
    commit: 99304cad2c401d4e9ca6efb4c8b673a5ddbd0bd3
@@ -66,37 +64,54 @@ packages:
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
 extra-deps: 
-- axiomatic-classes-0.1.0.0
-# - latex-function-tables-0.1.0.0
-- control-invariants-0.1.0.0
-# - existential-0.2.0.0
-- pseudomacros-0.0.2
-- quickcheck-report-0.1.0.0
-- assert-0.0.1.2
-- portable-template-haskell-lens-0.1.0.0
-- serialize-instances-0.1.0.0
-- portable-lines-0.1
-# - th-printf-0.3.1
-# - primitive-0.6.1.0
-- zlib-0.6.1.1
+    - assert-0.0.1.2
+    - axiomatic-classes-0.1.0.0
+    - control-invariants-0.1.0.0
+    - equational-reasoning-0.4.1.1
+    - ghc-typelits-natnormalise-0.4.6
+    - ghc-typelits-presburger-0.1.1.0
+    - monomorphic-0.0.3.3
+    - portable-lines-0.1
+    - portable-template-haskell-lens-0.1.0.0
+    - pseudomacros-0.0.2
+    - quickcheck-report-0.1.0.0
+    - serialize-instances-0.1.0.0
+    - sized-vector-1.4.3.1
+    - type-natural-0.4.1.1
+    - zlib-0.6.1.1
+    - primitive-0.6.1.0
 
-- HaTeX-3.17.0.2
-# - base-orphans-0.5.4
-- bifunctors-5.2
-# - mmorph-1.0.9
-- semigroupoids-5.0.1
-- shelly-1.6.8.1
-# - vector-0.11.0.0
-# - cereal-text-0.1.0.2
-# - cryptohash-sha256-0.11.100.1
-# - optparse-text-0.1.1.0
+# - axiomatic-classes-0.1.0.0
+# # - latex-function-tables-0.1.0.0
+# - control-invariants-0.1.0.0
+# # - existential-0.2.0.0
+# - pseudomacros-0.0.2
+# - quickcheck-report-0.1.0.0
+# - assert-0.0.1.2
+# - portable-template-haskell-lens-0.1.0.0
+# - serialize-instances-0.1.0.0
+# - portable-lines-0.1
+# # - th-printf-0.3.1
+# # - primitive-0.6.1.0
+# - zlib-0.6.1.1
 
-- sized-vector-1.4.3.1
-- equational-reasoning-0.4.1.1
-- monomorphic-0.0.3.3
-- type-natural-0.4.1.1
-- ghc-typelits-presburger-0.1.1.0
-- ghc-typelits-natnormalise-0.4.6
+# - HaTeX-3.17.0.2
+# # - base-orphans-0.5.4
+# - bifunctors-5.2
+# # - mmorph-1.0.9
+# - semigroupoids-5.0.1
+# - shelly-1.6.8.1
+# # - vector-0.11.0.0
+# # - cereal-text-0.1.0.2
+# # - cryptohash-sha256-0.11.100.1
+# # - optparse-text-0.1.1.0
+
+# - sized-vector-1.4.3.1
+# - equational-reasoning-0.4.1.1
+# - monomorphic-0.0.3.3
+# - type-natural-0.4.1.1
+# - ghc-typelits-presburger-0.1.1.0
+# - ghc-typelits-natnormalise-0.4.6
 
 # Override default flag values for local packages and extra-deps
 flags: {}
