@@ -10,7 +10,7 @@ maintainer:          example@example.com
 copyright:           2016 Author name here
 category:            Logic
 build-type:          Simple
-extra-source-files:  ../README.md
+extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
