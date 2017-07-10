@@ -15,7 +15,7 @@
 # resolver:
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
-resolver: lts-7.9
+resolver: lts-6.35
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -25,7 +25,7 @@ packages:
 - latex-function-tables
 - location:
    git: https://github.com/unitb/literate-unitb-complete
-   commit: 99304cad2c401d4e9ca6efb4c8b673a5ddbd0bd3
+   commit: ab2e9bccb694f92c56d5d43c84dea5175df08d2b
   subdirs:
      - literate-unitb-logic
      - literate-unitb-utils

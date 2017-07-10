@@ -1,6 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-module UnitB.FunctionTable.Spec.LaTeX where
+module UnitB.FunctionTable.Spec.LaTeX 
+    ( module UnitB.FunctionTable.Spec.LaTeX 
+    , LaTeX(TeXRaw) )
+where
 
 import Control.Lens
 import Control.Monad.Writer

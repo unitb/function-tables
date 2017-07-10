@@ -29,9 +29,9 @@ import           Text.LaTeX.Base.Class (LaTeXC)
 import           Text.LaTeX.FunctionTable
 import           Text.Printf.TH
 
+import TextShow
 import Utilities.Syntactic
 import Z3.Z3
-
 
 parseTable :: ParserSetting
            -> FunctionTable LaTeXLI
@@ -58,7 +58,7 @@ instance Syntactic LaTeXLI where
             lns = L.lines t
 
 toStringLi :: LaTeXLI -> StringLi
-toStringLi (LaTeXLI li t) = asStringLi (locToLI li) t
+toStringLi (LaTeXLI li t) = asStringLi (locToLI li) (pack t)
 
 assertion :: FunctionTable Expr -> Expr
 assertion (Table x t) = zsome $ ifoldr (\asm -> (:) . zand (zall asm) . zeq x) [] t
@@ -126,7 +126,10 @@ functionTablePO' t = do
     completeness t 
     disjointness t 
     wellDefinedness t
-    let subtablePO i (asm,t') = with (prefix (show i) >> nameless_hyps [asm]) $ functionTablePO' t'
+    let subtablePO :: HasExpr expr 
+                   => Int -> (expr, TableCells Expr) 
+                   -> PO.POGen ()
+        subtablePO i (asm,t') = with (prefix (showt i) >> nameless_hyps [asm]) $ functionTablePO' t'
     imapMOf_ isubtables subtablePO t
 
 disjointness :: TableCells Expr -> POGen ()
@@ -134,7 +137,7 @@ disjointness (Cell _ _) = return ()
 disjointness (Condition _ xs) = sequence_ $ do
         (i,(y,_),ys) <- L.zip3 [0..] (N.toList xs) $ N.tail $ N.tails (N.zip (0:|[1..]) xs)
         (j,(z,_))      <- ys
-        [emit_goal [label $ [s|disjointness-%d-%d|] i j] $ znot y `zor` znot z]
+        [emit_goal [label $ [st|disjointness-%d-%d|] i j] $ znot y `zor` znot z]
 
 completeness :: TableCells Expr -> POGen ()
 completeness (Cell _ _) = return ()
@@ -149,7 +152,7 @@ wellDefinedness (Condition _ xs) = imapM_ (lmap fst.emitWD) xs
 
 emitWD :: Int -> Expr -> POGen ()
 emitWD i e = 
-             emit_goal [label $ [s|WD/%d|] i] wd
+             emit_goal [label $ [st|WD/%d|] i] wd
     where
         wd = well_definedness e
 

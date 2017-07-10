@@ -15,7 +15,7 @@
 # resolver:
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
-resolver: lts-7.24
+resolver: lts-8.22
 # compiler: ghc-7.10.3
 
 # User packages to be built.
@@ -26,12 +26,13 @@ packages:
 - latex-function-tables
 - location:
    git: https://github.com/unitb/literate-unitb-complete
-   commit: 99304cad2c401d4e9ca6efb4c8b673a5ddbd0bd3
+   commit: ab2e9bccb694f92c56d5d43c84dea5175df08d2b
   subdirs:
      - literate-unitb-logic
      - literate-unitb-utils
      - literate-unitb-config
      - literate-unitb-latex
+     # - literate-unitb-scripts
      - syntax-error
      - unitb-testing
      - libs/bipartite-graph
@@ -46,10 +47,22 @@ packages:
      - libs/partial-order
 - location:
     git: https://github.com/unitb/tex2png-hs.git
-    commit: 234db307ab956ddde3ad75049452884cfd415091
+    commit: acbee0fd843af1c48bca44b86a4f61c45db3d83e
+- location:
+    git: https://github.com/unitb/serialize-instances.git
+    commit: ff3faa9cf976e68be8d769b5960a1b4db3b9bf63
+- location:
+    git: https://github.com/unitb/quickcheck-report.git
+    commit: 1bcc8cd5a91bc660346d1df7eb6ebb1a8152e865
+- location:
+    git: https://github.com/unitb/axiomatic-classes.git
+    commit: 24ce269668f39a74ba1fe0628c4f6d65e092870c
+- location:
+    git: https://github.com/unitb/invariants.git
+    commit: e644470ef8c16d5b1631b23ff3a127f8596955b8
 - location:
     git: https://github.com/unitb/existential.git
-    commit: d3b6a4e5fc82893459fe1985bd96c55b0742aa21
+    commit: c3ebd7b2b0d20a471c51bcd391dab649a9693606
 # - location: https://github.com/commercialhaskell/stack/commit/e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #   extra-dep: true
 #  subdirs:
@@ -65,8 +78,8 @@ packages:
 # (e.g., acme-missiles-0.3)
 extra-deps: 
     - assert-0.0.1.2
-    - axiomatic-classes-0.1.0.0
-    - control-invariants-0.1.0.0
+    # # - axiomatic-classes-0.1.0.0
+    # # - control-invariants-0.1.0.0
     - equational-reasoning-0.4.1.1
     - ghc-typelits-natnormalise-0.4.6
     - ghc-typelits-presburger-0.1.1.0
@@ -74,12 +87,17 @@ extra-deps:
     - portable-lines-0.1
     - portable-template-haskell-lens-0.1.0.0
     - pseudomacros-0.0.2
-    - quickcheck-report-0.1.0.0
-    - serialize-instances-0.1.0.0
+    # # - quickcheck-report-0.1.0.0
+    # # - serialize-instances-0.1.0.0
     - sized-vector-1.4.3.1
     - type-natural-0.4.1.1
     - zlib-0.6.1.1
-    - primitive-0.6.1.0
+    # # - primitive-0.6.1.0
+    # - process-listlike-1.0
+    - th-printf-0.3.1
+    - constraints-0.8
+    # # - directory-1.2.7.1
+    # # - process-1.2.2.0
 
 # - axiomatic-classes-0.1.0.0
 # # - latex-function-tables-0.1.0.0

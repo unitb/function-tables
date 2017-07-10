@@ -15,77 +15,40 @@
 # resolver:
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
-resolver: lts-7.9
+resolver: lts-8.22
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
 # 
 packages:
-- .
-# - some-directory
-# - https://example.com/foo/bar/baz-0.0.2.tar.gz
+- logic-function-tables
+- latex-function-tables
 - location:
-   git: https://github.com/unitb/literate-unitb-logic
-   commit: 0888bf907d3826f8861f5618778524bb5496c556
-- location:
-   git: https://github.com/unitb/latex-function-tables
-   commit: f0609cda6a321bfef65c247c120bafc9988148de
-- location:
-    git: https://github.com/unitb/literate-unitb-utils.git
-    commit: 9e62be5a42bc11ecc89bd40284bb73fc2a8407fe
-- location:
-    git: https://github.com/unitb/literate-unitb-config.git
-    commit: 118b906d59cf7586782d292baff5ae65988d0b63
-- location:
-    git: https://github.com/unitb/literate-unitb-latex.git
-    commit: 78529049b88999df3eb76340db166d9892d46bfd
+   git: https://github.com/unitb/literate-unitb-complete
+   commit: ab2e9bccb694f92c56d5d43c84dea5175df08d2b
+  subdirs:
+     - literate-unitb-logic
+     - literate-unitb-utils
+     - literate-unitb-config
+     - literate-unitb-latex
+     - syntax-error
+     - unitb-testing
+     - libs/bipartite-graph
+     - libs/classy-lens-hierarchy
+     - libs/generic-instances
+     - libs/string-lenses
+     - libs/pretty-printable
+     - libs/lens-extra
+     - libs/data-packaged
+     - libs/show-with
+     - libs/transformer-lenses
+     - libs/partial-order
 - location:
     git: https://github.com/unitb/tex2png-hs.git
-    commit: 9859bec9c95a111f0151a3b659e9e5707f565d09
-- location:
-    git: https://github.com/unitb/bipartite-graph.git
-    commit: 0e430c7a0571b31d980bf4141197ec6c19b964b6
-- location:
-    git: https://github.com/unitb/classy-lens-hierarchy.git
-    commit: a82197c81f2f8cdb4ecce54495ca62a6c10ad3d1
-- location:
-    git: https://github.com/unitb/generic-instances.git
-    commit: 5e9b4de0f6549933f570f7f2bab16654299c7b0d
-- location:
-    git: https://github.com/unitb/string-lenses.git
-    commit: 0d616b2f754391ba62581348464f45bcb8561019
-- location:
-    git: https://github.com/unitb/pretty-printable.git
-    commit: 85485a415d2098bb1a7ed8dc1ca412221a09720b
-- location:
-    git: https://github.com/unitb/syntax-error.git
-    commit: 764f224e42816961ae5742996d7c8eedcd145fde
-- location:
-    git: https://github.com/unitb/unitb-testing.git
-    commit: 9d3036afb6adf9ee00435fc6fa98e6a3cc604241
-- location:
-    git: https://github.com/unitb/lens-extra.git
-    commit: 2a54572aa21db03adb8c161e5755892803a1808b
-- location:
-    git: https://github.com/unitb/data-packaged.git
-    commit: cfd83405a7573cfa458cb2b25f79565e14316e70
-- location:
-    git: https://github.com/unitb/show-with.git
-    commit: 6be72dbe945cae0945dd18a835f56c7a807937a7
-- location:
-    git: https://github.com/unitb/transformer-lenses.git
-    commit: 405f81025293b9f9cd25145644ca86fe88a69388
-- location:
-    git: https://github.com/unitb/partial-order.git
-    commit: 0f1629aa99c0a74bccd4e98e63960361175d16c6
+    commit: 234db307ab956ddde3ad75049452884cfd415091
 - location:
     git: https://github.com/unitb/existential.git
     commit: d3b6a4e5fc82893459fe1985bd96c55b0742aa21
-# - location: https://github.com/commercialhaskell/stack/commit/e7b331f14bcffb8367cd58fbfc8b40ec7642100a
-#   extra-dep: true
-#  subdirs:
-#  - auto-update
-#  - wai
 # 
 # A package marked 'extra-dep: true' will only be built if demanded by a
 # non-dependency (i.e. a user package), and its test suites and benchmarks
@@ -116,7 +79,7 @@ extra-deps:
 - semigroupoids-5.0.1
 - shelly-1.6.8.1
 - vector-0.11.0.0
-- lens-4.14
+# - lens-4.14
 - sized-vector-1.4.3.1
 - equational-reasoning-0.4.1.1
 - monomorphic-0.0.3.3

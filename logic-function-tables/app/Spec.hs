@@ -3,8 +3,7 @@ module Main where
 
 import Control.Concurrent
 
-import Data.List as L
-import Data.Text as T (Text,intercalate)
+import Data.Text as T (Text,intercalate,unlines)
 
 import Example
 
@@ -22,11 +21,11 @@ suite = test_cases
             [ aCase "verification" case0 result0
             , aCase "LaTeX rendering" case1 result1 ]
 
-case0 :: IO String
-case0 = fmap L.unlines . P.toListM $ verifySpec' doNotRender isolette
+case0 :: IO Text
+case0 = fmap T.unlines . P.toListM $ verifySpec' doNotRender isolette
 
-result0 :: String
-result0 = L.unlines
+result0 :: Text
+result0 = T.unlines
             [ "\\cAl"
             , "(1/1/0/WD,Valid)"
             , "(1/1/completeness,Valid)"

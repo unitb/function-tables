@@ -30,7 +30,7 @@ import Logic.QuasiQuote
 import Logic.Theories
 
 import           Pipes
-import qualified Pipes.Prelude as P
+import qualified Pipes.Prelude.Text as T (stdoutLn)
 
 import System.Process
 
@@ -136,14 +136,14 @@ renderSpecTeX :: SpecBuilder a
 renderSpecTeX (SpecBuilder cmd) = T.render . specToTeX . noResults . snd $ execRWS cmd 1 ()
 
 verifySpecWith :: State SpecOpt k -> SpecBuilder a -> IO ()
-verifySpecWith opts spec = runEffect $ verifySpec' opts spec >-> P.stdoutLn
+verifySpecWith opts spec = runEffect $ verifySpec' opts spec >-> T.stdoutLn
 
 verifySpec :: SpecBuilder a -> IO ()
 verifySpec = verifySpecWith $ return ()
 
 verifySpec' :: State SpecOpt k
             -> SpecBuilder a 
-            -> Producer String IO ()
+            -> Producer Text IO ()
 verifySpec' opt' (SpecBuilder cmd) = do
         let opt = execState opt' SpecOpt 
                     { _renderLaTeX = True 
@@ -166,14 +166,14 @@ verifySpec' opt' (SpecBuilder cmd) = do
                                 ( (asm ++) . M.elems $ M.mapMaybe wd $ ss'^.userConst )
                                 t
                     total <- forM rs $ \(t,r) -> do  
-                        yield $ pretty $ header t
-                        mapM_ (yield . pretty) $ toList r
-                        yield $ [s|Success: %d / %d |] 
+                        yield $ prettyText $ header t
+                        mapM_ (yield . prettyText) $ toList r
+                        yield $ [st|Success: %d / %d |] 
                             (size $ M.filter (Valid ==) r) 
                             (size r)
                         return
                             (size $ M.filter (Valid ==) r,size r)
-                    yield $ [s|Total: %d / %d |] (sum $ M.map fst total) (sum $ M.map snd total)
+                    yield $ [st|Total: %d / %d |] (sum $ M.map fst total) (sum $ M.map snd total)
                     return $ Just . M.map snd . M.mapKeys pretty $ rs
                 where
                     parser = ctxWith thys (do
@@ -194,23 +194,23 @@ verifySpec' opt' (SpecBuilder cmd) = do
 declSort :: Pre => LaTeX -> SpecBuilder ()
 declSort t = SpecBuilder $ tell $ mempty 
         { _sortDecl = M.singleton n (Sort n (asInternal n) 0) }
-    where n = makeName . unpack . T.render $ t
+    where n = makeName . T.render $ t
 
-enumSort' :: Pre => LaTeX -> [String] -> SpecBuilder ()
-enumSort' t = enumSort t . L.map (\l -> (l,fromString l))
+enumSort' :: Pre => LaTeX -> [Text] -> SpecBuilder ()
+enumSort' t = enumSort t . L.map (\l -> (l,TeXRaw $ protectText l))
 
 enumSort :: Pre 
-         => LaTeX -> [(String,LaTeX)] -> SpecBuilder ()
+         => LaTeX -> [(Text,LaTeX)] -> SpecBuilder ()
 enumSort t cs = SpecBuilder $ tell $ mempty
-        { _newCommands = mconcat [ mathComm (fromString c) (textit txt) | (c,txt) <- cs ]
+        { _newCommands = mconcat [ mathComm c (textit txt) | (c,txt) <- cs ]
         , _dataCons  = symbol_table 
-            [ Def [] (makeName ("\\" ++ i)) 
+            [ Def [] (makeName ("\\" <> i)) 
                   [] t'
                   (Word $ Var (makeName i) t') 
                         | (i,_) <- cs ]
         , _sortDecl  = M.singleton n s' }
     where 
-        n  = makeName . unpack . T.render $ t
+        n  = makeName . T.render $ t
         s' = Datatype [] n [ (makeName $ fst c,[]) | c <- cs ]
         t' = make_type s' []
 
@@ -218,12 +218,12 @@ constant :: Pre => LaTeX -> String -> SpecBuilder ()
 constant n t = SpecBuilder $ tell $ mempty
         { _newCommands = mathComm' $ T.render n
         , _userConst = M.singleton n' (VarDeclT id (makeLaTeXLI t) False) }
-    where n' = makeName $ "\\" <> unpack (T.render n)
+    where n' = makeName $ "\\" <> T.render n
 definition :: Pre => LaTeX -> LaTeX -> SpecBuilder ()
 definition n e = SpecBuilder $ tell $ mempty
         { _newCommands = mathComm (T.render n) n
         , _userDef = M.singleton n' (fromLaTeX e) }
-    where n' = makeName . unpack $ "\\" <> T.render n
+    where n' = makeName $ "\\" <> T.render n
 monitored :: Pre => LaTeX -> String -> SpecBuilder ()
 monitored n t = SpecBuilder $ tell $ mempty
         { _newCommands = mconcat 
@@ -237,8 +237,8 @@ monitored n t = SpecBuilder $ tell $ mempty
                     ,(preN',VarDeclT guarded_type t' True)] }
     where 
         tN' = T.render n & _Cons._1 %~ toUpper
-        n'  = makeName . unpack $ "\\m" <> tN'
-        preN'  = makeName . unpack $ "\\preM" <> tN'
+        n'  = makeName $ "\\m" <> tN'
+        preN'  = makeName $ "\\preM" <> tN'
         t'  = makeLaTeXLI t
 controlled :: Pre => LaTeX -> String -> SpecBuilder ()
 controlled n t = SpecBuilder $ tell $ mempty
@@ -253,8 +253,8 @@ controlled n t = SpecBuilder $ tell $ mempty
                     ,(preN',VarDeclT guarded_type t' True)] }
     where 
         tN' = T.render n & _Cons._1 %~ toUpper
-        n'  = makeName . unpack $ "\\c" <> tN'
-        preN'  = makeName . unpack $ "\\preC" <> tN'
+        n'  = makeName $ "\\c" <> tN'
+        preN'  = makeName $ "\\preC" <> tN'
         t'  = makeLaTeXLI t
 
 -- held_for :: LaTeX -> SpecBuilder ()
